@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8"> <meta name="viewport" content="width=device-width, initial-scale=1.0"> <title>新能源汽车生产车间</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
+    <link rel="stylesheet" href="/css/style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns@3.0.0/dist/chartjs-adapter-date-fns.bundle.min.js"></script>
+</head>
+<body>
+    <header>
+        <h1>新能源汽车生产车间</h1>
+        <button id="theme-toggle-btn" title="切换主题" class="theme-toggle-button">
+            <i class="fas fa-sun"></i>
+        </button>
+    </header>
+    <nav>
+        <button class="nav-toggle" aria-label="Toggle navigation" aria-expanded="false">
+            <i class="fas fa-bars" aria-hidden="true"></i>
+        </button>
+        <ul id="nav-menu"><li><a href="/html/index.html" id="nav-index">首页概览</a></li><li><a href="/html/battery.html" id="nav-battery">电池车间</a></li><li><a href="/html/welding.html" id="nav-welding">焊接车间</a></li><li><a href="/html/assembly.html" id="nav-assembly">总装车间</a></li><li><a href="/html/testing.html" id="nav-testing">检测车间</a></li></ul>
+    </nav>
+    <main>
+        <h2>欢迎来到数据监控中心</h2>
+        <p style="max-width: 800px; margin: 0 auto 30px auto; text-align: center;"></p>
+         <div class="workshop-layout" style="max-width: 1000px; margin: 40px auto;">
+             <div class="data-card" data-status="ok"> <span class="data-card-label">系统状态</span> <div class="data-card-content"> <span class="data-card-value" id="system-status">运行中</span> </div> </div>
+             <div class="data-card" data-status="ok"> <span class="data-card-label">数据库连接</span> <div class="data-card-content"> <span class="data-card-value" id="db-status">已连接</span> </div> </div>
+             <div class="data-card" data-status="info"> <span class="data-card-label">数据模拟</span> <div class="data-card-content"> <span class="data-card-value" id="simulation-status">活动</span> </div> </div>
+        </div>
+         <p style="margin-top: 50px; text-align:center; font-size: 1.1em;">通过导航栏选择一个车间开始监控！</p>
+    </main>
+    <footer><p>&copy; 2025 NEV Workshop Monitor (Phase 2 - Gauge Charts). All Rights Reserved.</p></footer>
+    <button id="debug-button" style="display: none;">手动获取数据 (Debug)</button>
+    <pre id="debug-output" style="display: none;"></pre>
+    <script src="/js/script.js"></script>
+    <script src="/js/theme.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            setActiveNav('index');
+        });
+    </script>
+</body>
+</html> 

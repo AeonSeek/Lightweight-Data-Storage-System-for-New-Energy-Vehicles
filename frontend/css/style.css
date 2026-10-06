@@ -1,0 +1,641 @@
+/* style.css - Phase 5: UI Polishing & Enhancements */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Roboto:wght@400;700&display=swap');
+@import url("https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"); /* Bootstrap Icons */
+
+/*-------------------------*\
+  #ROOT & THEME VARIABLES (Added Icon Colors)
+\*-------------------------*/
+:root {
+    /* Fonts */
+    --font-primary: 'Inter', sans-serif;
+    --font-secondary: 'Roboto', sans-serif;
+
+    /* Transitions */
+    --transition-speed: 0.25s;
+    --transition-timing: ease-in-out;
+
+    /* Shadows (Updated) */
+    --shadow-color: rgba(13, 110, 253, 0.1); /* Based on new primary blue */
+    --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.06);
+    --shadow-md: 0 4px 8px rgba(0, 0, 0, 0.08);
+    --shadow-lg: 0 10px 20px rgba(0, 0, 0, 0.1);
+
+    /* --- Light Theme (Default) --- */
+    --bg-primary: #f8f9fa;
+    --bg-secondary: #ffffff;
+    --bg-tertiary: #e9ecef;
+    --text-primary: #343a40; /* Softer dark grey */
+    --text-secondary: #6c757d;
+    --border-color: #e9ecef; /* Lighter border */
+    --accent-primary: #0d6efd; /* New primary blue */
+    --accent-secondary: #007bff;
+    --status-ok-border: #198754;
+    --status-ok-bg: rgba(25, 135, 84, 0.08);
+    --status-nok-border: #dc3545;
+    --status-nok-bg: rgba(220, 53, 69, 0.08);
+    --status-warn-border: #ffc107;
+    --status-warn-bg: rgba(255, 193, 7, 0.1);
+    --status-info-border: #0dcaf0;
+    --status-info-bg: rgba(13, 202, 240, 0.1);
+    --status-idle-border: #adb5bd;
+    --status-idle-bg: rgba(173, 181, 189, 0.05);
+    --icon-color: var(--text-secondary);
+    --gauge-segment-color: var(--accent-primary);
+    --line-color: var(--accent-secondary);
+}
+
+/* Apply specific dark background to header and nav in dark theme */
+:root[data-theme="dark"] header,
+:root[data-theme="dark"] nav {
+    background-color: var(--bg-primary); /* Use the darkest background for header/nav */
+}
+
+:root[data-theme="dark"] {
+    --bg-primary: #0d1117;  /* GitHub dark background */
+    --bg-secondary: #161b22; /* GitHub dark secondary bg (cards, modals) */
+    --bg-tertiary: #21262d; /* GitHub dark tertiary bg (hover, headers) */
+    --text-primary: #c9d1d9; /* GitHub dark primary text */
+    --text-secondary: #8b949e; /* GitHub dark secondary text */
+    --border-color: #30363d; /* GitHub dark border */
+    --accent-primary: #58a6ff; /* Lighter blue for dark theme primary accent */
+    --accent-secondary: #58a6ff; /* Keep aligned with primary for now */
+    --shadow-color: rgba(88, 166, 255, 0.15); /* Adjusted shadow color for dark */
+    --status-ok-border: #3fb950;
+    --status-ok-bg: rgba(63, 185, 80, 0.15);
+    --status-nok-border: #f85149;
+    --status-nok-bg: rgba(248, 81, 73, 0.15);
+    --status-warn-border: #d29922;
+    --status-warn-bg: rgba(210, 153, 34, 0.2);
+    --status-info-border: #58a6ff; /* Align with accent */
+    --status-info-bg: rgba(88, 166, 255, 0.15);
+    --status-idle-border: #6e7681;
+    --status-idle-bg: rgba(110, 118, 129, 0.1);
+    --icon-color: var(--text-secondary);
+    --gauge-segment-color: var(--accent-primary);
+    --line-color: var(--accent-secondary);
+}
+
+/*-------------------------*\
+  #BASE STYLES & THEME APPLICATION
+\*-------------------------*/
+*, *::before, *::after { box-sizing: border-box; }
+
+body {
+    font-family: var(--font-primary);
+    margin: 0;
+    padding: 0;
+    background-color: var(--bg-primary); /* Use theme variable */
+    color: var(--text-primary); /* Use theme variable */
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    line-height: 1.6;
+    transition: background-color var(--transition-speed) var(--transition-timing), color var(--transition-speed) var(--transition-timing);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+/*-------------------------*\
+  #LAYOUT: HEADER, NAV, FOOTER, MAIN (Revert Nav, Adjust Main)
+\*-------------------------*/
+header {
+    background-color: var(--bg-secondary); /* Updated to use direct theme variable */
+    color: var(--text-primary); /* Updated */
+    padding: 18px 40px;
+    border-bottom: 1px solid var(--border-color); /* Updated */
+    display: flex; /* Added */
+    justify-content: space-between; /* Added */
+    align-items: center; /* Added */
+    transition: background-color var(--transition-speed) var(--transition-timing), border-color var(--transition-speed) var(--transition-timing);
+}
+header h1 {
+    margin: 0;
+    font-size: 1.9em;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    color: var(--accent-primary); /* Updated */
+    transition: color var(--transition-speed) var(--transition-timing);
+}
+
+/* Theme toggle button inside header */
+#theme-toggle-btn {
+    background: none;
+    border: 1px solid var(--border-color);
+    color: var(--text-secondary);
+    padding: 8px 12px; /* Adjusted padding */
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1.1em; /* Adjusted font size */
+    line-height: 1;
+    transition: color var(--transition-speed), border-color var(--transition-speed);
+}
+
+#theme-toggle-btn:hover {
+    color: var(--accent-primary);
+    border-color: var(--accent-primary);
+}
+
+nav {
+    background-color: var(--bg-secondary); /* Match header background */
+    padding: 0 40px; /* Adjusted padding, vertical handled by links */
+    border-bottom: none; /* Remove border to unify with header */
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    box-shadow: var(--shadow-sm);
+    transition: background-color var(--transition-speed) var(--transition-timing), border-color var(--transition-speed) var(--transition-timing);
+    display: flex;
+    justify-content: center; 
+    align-items: center;
+    /* position: relative; */ /* Not needed if nav-toggle is handled within flex */
+}
+nav ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+nav ul li { 
+    margin: 0; /* Remove individual li margin, control spacing with link padding */
+}
+nav ul li a {
+    text-decoration: none;
+    color: var(--text-secondary); 
+    font-weight: 500; /* Standard link font weight */
+    font-size: 0.95em;
+    padding: 18px 20px; /* Vertical padding defines nav height, horizontal for spacing */
+    /* border-radius: 25px; */ /* Removed */
+    transition: color var(--transition-speed) var(--transition-timing);
+    display: inline-block;
+    /* border: 1px solid transparent; */ /* Removed */
+    position: relative; /* For underline pseudo-element */
+    border-bottom: 3px solid transparent; /* Placeholder for underline, prevents jumping */
+}
+
+nav ul li a:hover {
+    /* background-color: var(--bg-tertiary); */ /* Removed */
+    color: var(--accent-primary); 
+    /* border-color: var(--bg-tertiary); */ /* Removed */
+    border-bottom-color: var(--accent-primary); /* Show underline on hover */
+}
+
+nav ul li a.active {
+    color: var(--accent-primary); 
+    font-weight: 700;
+    border-bottom-color: var(--accent-primary); 
+}
+
+/* Hamburger Menu Styles */
+.nav-toggle {
+    display: none; /* Hidden by default, shown in media query */
+    background: none;
+    border: none;
+    color: var(--text-primary);
+    font-size: 1.5em; /* Adjust size as needed */
+    padding: 10px 15px; /* Make it easy to tap */
+    cursor: pointer;
+    margin-left: auto; /* Push to the right if nav becomes space-between container */
+}
+
+.nav-toggle .fa-times {
+    display: none; /* Initially hide the 'X' icon */
+}
+
+.nav-toggle.active .fa-bars {
+    display: none; /* Hide 'bars' icon when active */
+}
+
+.nav-toggle.active .fa-times {
+    display: inline; /* Show 'X' icon when active */
+}
+
+/* Styles for the navigation menu when it's open on mobile */
+#nav-menu.nav-menu-opened {
+    display: flex;
+    flex-direction: column;
+    position: absolute;
+    top: 100%; /* Position below the nav bar */
+    left: 0;
+    width: 100%;
+    background-color: var(--bg-secondary);
+    box-shadow: var(--shadow-md);
+    border-top: 1px solid var(--border-color);
+    z-index: 999; /* Ensure it's above other content */
+}
+
+#nav-menu.nav-menu-opened li {
+    width: 100%;
+}
+
+#nav-menu.nav-menu-opened li a {
+    display: block; /* Make links take full width */
+    padding: 15px 20px; /* Adjust padding for mobile links */
+    border-bottom: 1px solid var(--border-color); /* Separator for mobile links */
+    text-align: left;
+    font-weight: 500;
+}
+
+#nav-menu.nav-menu-opened li:last-child a {
+    border-bottom: none; /* No border for the last item */
+}
+
+#nav-menu.nav-menu-opened li a.active,
+#nav-menu.nav-menu-opened li a:hover {
+    color: var(--accent-primary);
+    background-color: var(--bg-tertiary); /* Slight background for selection/hover on mobile */
+    border-bottom-color: var(--border-color); /* Keep separator consistent on hover */
+}
+
+main {
+    flex-grow: 1;
+    padding: 30px 40px;
+    max-width: 1800px;
+    margin: 30px auto;
+    width: 95%;
+}
+h2 {
+    color: var(--accent-primary); /* Updated */
+    margin-bottom: 0; /* Remove margin handled by container */
+    font-size: 1.8em;
+    font-weight: 700;
+    display: inline-block;
+    transition: color var(--transition-speed), border-color var(--transition-speed);
+}
+footer {
+    background-color: var(--bg-secondary); /* Updated */
+    color: var(--text-secondary); /* Updated */
+    text-align: center;
+    padding: 20px 40px;
+    margin-top: auto;
+    font-size: 0.9em;
+    border-top: 1px solid var(--border-color); /* Updated */
+    transition: background-color var(--transition-speed), border-color var(--transition-speed), color var(--transition-speed);
+}
+
+/*-------------------------*\
+  # WORKSHOP PAGE LAYOUT & DATA CARDS (Enhanced)
+\*-------------------------*/
+.workshop-layout { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); /* Slightly wider cards */ gap: 25px; margin-bottom: 30px; }
+.data-card {
+    background-color: var(--bg-secondary); /* Updated */
+    border: 1px solid var(--border-color); /* Updated */
+    border-left: 6px solid transparent; /* Thicker status border */
+    border-radius: 8px;
+    padding: 18px 22px;
+    box-shadow: var(--shadow-md);
+    transition: transform var(--transition-speed) var(--transition-timing), box-shadow var(--transition-speed) var(--transition-timing), border-color var(--transition-speed) var(--transition-timing), border-left-color var(--transition-speed), background-color var(--transition-speed) var(--transition-timing);
+    display: flex;
+    flex-direction: column;
+    min-height: 110px;
+    position: relative;
+}
+.data-card:hover {
+    transform: translateY(-4px) scale(1.01);
+    box-shadow: var(--shadow-lg);
+    border-color: var(--accent-primary); /* Updated */
+}
+.data-card-header { display: flex; align-items: center; margin-bottom: 8px; }
+.data-card-icon {
+    font-size: 1.1em;
+    color: var(--icon-color); /* Updated */
+    margin-right: 10px;
+    flex-shrink: 0;
+    transition: color var(--transition-speed);
+}
+.data-card-label {
+    font-size: 0.8em; /* Slightly smaller label */
+    color: var(--text-secondary); /* Updated */
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+    flex-grow: 1;
+    transition: color var(--transition-speed);
+}
+.data-card-status-indicator { /* New element for status text/dot */ font-size: 0.75em; font-weight: 700; padding: 3px 8px; border-radius: 12px; margin-left: auto; /* Push to right */ text-transform: uppercase; }
+.data-card-content { margin-top: auto; text-align: right; flex-grow: 1; display: flex; flex-direction: column; justify-content: flex-end; padding-top: 5px; }
+.data-card-value {
+    font-family: var(--font-secondary);
+    font-size: 2.1em; /* Slightly adjusted */
+    font-weight: 700;
+    color: var(--text-primary); /* Updated */
+    line-height: 1.2;
+    transition: color var(--transition-speed);
+    min-height: 1.2em;
+}
+/* Unit Suffixes */
+.data-card-value::after {
+    font-size: 0.4em;
+    font-family: var(--font-primary);
+    color: var(--text-secondary); /* Updated */
+    margin-left: 5px;
+    font-weight: 400;
+    vertical-align: baseline;
+    display: inline-block;
+    transition: color var(--transition-speed);
+}
+.data-card[data-key="cleanliness_level"] .data-card-value::before {
+    content: "ISO ";
+    font-size: 0.7em;
+    color: var(--text-secondary); /* Updated */
+    margin-right: 2px;
+    vertical-align: baseline;
+    font-weight: 400;
+}
+/* ... other units ... */
+.data-card[data-key*="temp"] .data-card-value::after { content: "°C"; } .data-card[data-key*="humidity"] .data-card-value::after, .data-card[data-key*="rate"] .data-card-value::after, .data-card[data-key*="level"] .data-card-value::after, .data-card[data-key="soc"] .data-card-value::after { content: "%"; } .data-card[data-key*="voltage"] .data-card-value::after { content: "V"; } .data-card[data-key*="current"] .data-card-value::after { content: "A"; } .data-card[data-key*="pressure"] .data-card-value::after { content: "kPa"; } .data-card[data-key*="ppm"] .data-card-value::after { content: "ppm"; } .data-card[data-key*="lux"] .data-card-value::after { content: "Lux"; } .data-card[data-key*="torque"] .data-card-value::after { content: "Nm"; } .data-card[data-key*="resistance"] .data-card-value::after { content: "MΩ"; } .data-card[data-key*="angle"] .data-card-value::after { content: "°"; } .data-card[data-key*="power"] .data-card-value::after { content: "kW"; } .data-card[data-key*="noise"] .data-card-value::after { content: "dB"; }
+
+/*-------------------------*\
+  # CHART STYLING (Refined)
+\*-------------------------*/
+.chart-card { min-height: 300px; }
+.gauge-card { min-height: 180px; }
+.chart-container { position: relative; width: 100%; height: 100%; flex-grow: 1; display: flex; align-items: center; justify-content: center; padding-top: 5px; }
+.line-chart-container { height: calc(100% - 30px); min-height: 200px; /* Increased min height */ }
+.gauge-chart-container { position: relative; width: 100%; height: 110px; /* Slightly taller gauge area */ margin-top: 5px; }
+.gauge-chart-container canvas { position: absolute; top: 0; left: 50%; transform: translateX(-50%); max-width: 110px; max-height: 110px; }
+.gauge-value-text {
+    position: absolute;
+    top: 55%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-family: var(--font-secondary);
+    font-size: 1.6em;
+    font-weight: 700;
+    color: var(--text-primary); /* Updated */
+    transition: color var(--transition-speed);
+}
+
+/* Status Styling - applied via JS setting data-status on .data-card */
+.data-card[data-status="ok"] { border-left-color: var(--status-ok-border); }
+.data-card[data-status="ok"] .data-card-icon { color: var(--status-ok-border); }
+.data-card[data-status="ok"] .data-card-status-indicator { background-color: var(--status-ok-bg); color: var(--status-ok-border); }
+.data-card[data-status="ok"] .data-card-value, .data-card[data-status="ok"] .gauge-value-text { color: var(--status-ok-border); }
+
+.data-card[data-status="nok"] { border-left-color: var(--status-nok-border); background-color: var(--status-nok-bg); }
+.data-card[data-status="nok"] .data-card-icon { color: var(--status-nok-border); }
+.data-card[data-status="nok"] .data-card-status-indicator { background-color: var(--status-nok-bg); color: var(--status-nok-border); border: 1px solid var(--status-nok-border); }
+.data-card[data-status="nok"] .data-card-value, .data-card[data-status="nok"] .gauge-value-text { color: var(--status-nok-border); }
+
+.data-card[data-status="warn"] { border-left-color: var(--status-warn-border); background-color: var(--status-warn-bg); }
+.data-card[data-status="warn"] .data-card-icon { color: var(--status-warn-border); }
+.data-card[data-status="warn"] .data-card-status-indicator { background-color: var(--status-warn-bg); color: var(--status-warn-border); }
+.data-card[data-status="warn"] .data-card-value, .data-card[data-status="warn"] .gauge-value-text { color: var(--status-warn-border); }
+
+.data-card[data-status="info"] { border-left-color: var(--status-info-border); }
+.data-card[data-status="info"] .data-card-icon { color: var(--status-info-border); }
+.data-card[data-status="info"] .data-card-status-indicator { background-color: var(--status-info-bg); color: var(--status-info-border); }
+.data-card[data-status="info"] .data-card-value, .data-card[data-status="info"] .gauge-value-text { color: var(--status-info-border); }
+
+.data-card[data-status="idle"] { border-left-color: var(--status-idle-border); }
+.data-card[data-status="idle"] .data-card-icon { color: var(--icon-color); }
+.data-card[data-status="idle"] .data-card-status-indicator { background-color: var(--status-idle-bg); color: var(--status-idle-border); }
+.data-card[data-status="idle"] .data-card-value, .data-card[data-status="idle"] .gauge-value-text { color: var(--text-secondary); }
+
+
+/*-------------------------*\
+  # UTILITIES & DEBUG (保持不变)
+\*-------------------------*/
+#last-updated {
+    margin-top: 30px;
+    text-align: center;
+    font-size: 0.85em;
+    color: var(--text-secondary); /* Updated */
+    width: 100%;
+    letter-spacing: 0.5px;
+    transition: color var(--transition-speed);
+}
+#debug-button { position: fixed; bottom: 15px; right: 15px; z-index: 1001; padding: 9px 14px; background-color: #dc3545; color: white; border: none; border-radius: 5px; cursor: pointer; font-weight: 600; box-shadow: 0 3px 6px rgba(0,0,0,0.2); opacity: 0.85; transition: opacity 0.2s; font-size: 13px; }
+#debug-button:hover { opacity: 1; }
+#debug-output { position: fixed; bottom: 55px; right: 15px; z-index: 1000; background-color: rgba(30,30,30,0.9); color: #00ff00; font-family: monospace; font-size: 11px; padding: 10px; border-radius: 4px; max-height: 28vh; overflow-y: auto; width: 380px; max-width: 90vw; display: none; border: 1px solid #555; box-shadow: 0 0 12px rgba(0,0,0,0.4); white-space: pre-wrap; word-break: break-all; }
+
+/*-------------------------*\
+  #RESPONSIVE (Adjust Nav & Main Title)
+\*-------------------------*/
+@media (max-width: 1200px) { main { padding: 25px 20px; } }
+@media (max-width: 992px) { h2 { font-size: 1.6em; } .workshop-layout { gap: 20px; } }
+@media (max-width: 768px) {
+    header { padding: 15px 15px; }
+    header h1 { font-size: 1.4em; }
+    
+    nav {
+        padding: 0 15px; /* Adjust nav padding for mobile */
+        justify-content: flex-end; /* Push hamburger to the right */
+    }
+
+    .nav-toggle {
+        display: block; /* Show hamburger button */
+        padding: 12px 0px 12px 15px; /* Adjust padding for hamburger */
+        margin-left: 0; /* Reset margin if nav is flex-end */
+    }
+
+    #nav-menu {
+        display: none; /* Hide the main nav menu items by default */
+        /* Styles for when it's opened are in #nav-menu.nav-menu-opened */
+    }
+    
+    nav ul li {margin: 3px 5px;} /* This might be from an old version, check if still needed or conflicts */
+    nav ul li a { padding: 7px 12px; font-size: 0.9em;} /* This might be from an old version, check if still needed or conflicts */
+
+    main { padding: 20px 15px; margin: 20px auto; }
+    .main-title-container {
+        margin-bottom: 20px; /* Adjust margin */
+        padding-bottom: 8px; /* Adjust padding */
+    }
+    h2 {
+       font-size: 1.5em;
+    }
+    .export-button-main {
+        font-size: 0.85em;
+        padding: 5px 10px;
+    }
+    .workshop-layout { gap: 15px; }
+    .data-card { padding: 12px 15px; min-height: 90px;}
+    .data-card-value { font-size: 1.8em; }
+    .gauge-chart-container { height: 90px; }
+    .gauge-chart-container canvas { max-width: 90px; max-height: 90px; }
+    .gauge-value-text { font-size: 1.2em; }
+    .chart-card {min-height: 200px;}
+}
+@media (max-width: 480px) {
+    header h1 { font-size: 1.2em; }
+     nav ul {
+        /* Center links on very small screens if needed */
+        /* justify-content: center; */
+     }
+    nav ul li a { padding: 6px 10px; font-size: 0.8em;}
+    .main-title-container {
+        /* Stack title and button */
+         flex-direction: column;
+         align-items: flex-start;
+         gap: 8px;
+         border-bottom: none; /* Remove border */
+         padding-bottom: 0;
+         margin-bottom: 15px;
+    }
+    h2 {
+        font-size: 1.3em; /* Adjust title size */
+        border-bottom: 2px solid var(--accent-primary); /* Updated */
+        padding-bottom: 5px;
+        margin-bottom: 5px; /* Add some margin below title */
+    }
+     .export-button-main {
+        /* Ensure button takes appropriate width or stays inline */
+     }
+    footer { padding: 15px; font-size: 0.8em; }
+    .data-card-value { font-size: 1.7em; }
+    .gauge-value-text { font-size: 1.1em; }
+    #debug-button { bottom: 10px; right: 10px; padding: 8px 12px; font-size: 13px;}
+    #debug-output { bottom: 50px; right: 10px; width: calc(100% - 20px); max-height: 25vh;}
+}
+
+/* New container for H2 and Export Button */
+.main-title-container {
+    display: flex;
+    align-items: baseline; /* Align text baseline of h2 and button text */
+    justify-content: space-between; /* Push button to the right */
+    margin-bottom: 30px; /* Keep original h2 margin */
+    flex-wrap: wrap; /* Allow wrapping on small screens */
+    gap: 15px; /* Add gap when wrapping */
+    border-bottom: 2px solid var(--accent-primary); /* Updated */
+    padding-bottom: 10px; /* Add padding like h2 had */
+}
+
+/* Style for the export button in main */
+.export-button-main {
+    padding: 6px 14px; /* Adjust padding */
+    font-size: 0.9em;
+    font-weight: 600;
+    background-color: var(--bg-tertiary); /* Updated */
+    border: 1px solid var(--border-color); /* Updated */
+    color: var(--text-secondary); /* Updated */
+    border-radius: 5px;
+    cursor: pointer;
+    transition: all var(--transition-speed) var(--transition-timing);
+    display: inline-flex; /* Use flex to align icon and text */
+    align-items: center;
+    gap: 6px; /* Space between icon and text */
+    white-space: nowrap; /* Prevent button text wrapping */
+}
+
+.export-button-main:hover {
+    background-color: var(--border-color); /* Updated */
+    color: var(--accent-primary); /* Updated */
+    border-color: var(--accent-secondary); /* Updated */
+    box-shadow: var(--shadow-sm);
+}
+
+.export-button-main i {
+   font-size: 1.1em; /* Adjust icon size if needed */
+}
+
+/*
+# INDEX PAGE SPECIFIC STYLES (New Section)
+.section-container {
+    margin-bottom: 40px;
+    padding: 20px;
+    background-color: var(--bg-secondary);
+    border-radius: 8px;
+    box-shadow: var(--shadow-md);
+}
+
+.section-container h3 {
+    font-size: 1.5em;
+    color: var(--accent-primary);
+    margin-top: 0;
+    margin-bottom: 20px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--border-color);
+}
+
+
+.info-cards-layout {
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); 
+    gap: 20px;
+}
+
+.system-info-card .data-card-header {
+    align-items: center; 
+}
+
+.system-info-card .data-card-icon {
+    font-size: 1.3em; 
+    margin-right: 12px;
+}
+
+.system-info-card .data-card-label {
+    font-size: 0.9em;
+    font-weight: 600;
+}
+
+.system-info-card .data-card-value {
+    font-size: 1.8em; 
+    text-align: left; 
+    margin-top: 8px;
+}
+
+
+.selection-cards-layout {
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 25px;
+}
+
+.workshop-card {
+    text-decoration: none;
+    color: var(--text-primary);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between; 
+    min-height: 220px; 
+    padding: 25px; 
+}
+
+.workshop-card:hover {
+    border-color: var(--accent-primary);
+    transform: translateY(-5px) scale(1.02);
+    box-shadow: var(--shadow-lg);
+}
+
+.workshop-card .data-card-header .data-card-icon {
+    font-size: 1.8em; 
+    color: var(--accent-primary);
+    margin-right: 15px;
+}
+
+.workshop-card .data-card-header .data-card-label {
+    font-size: 1.2em; 
+    font-weight: 700;
+    color: var(--text-primary);
+}
+
+.workshop-card-description {
+    font-size: 0.9em;
+    color: var(--text-secondary);
+    line-height: 1.5;
+    margin-top: 10px;
+    margin-bottom: 15px;
+    flex-grow: 1; 
+}
+
+.workshop-card-action {
+    font-size: 0.95em;
+    font-weight: 600;
+    color: var(--accent-secondary);
+    text-align: right;
+    margin-top: auto; 
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+}
+
+.workshop-card-action i {
+    margin-right: 8px;
+    font-size: 1.1em;
+    transition: transform 0.2s ease-in-out;
+}
+
+.workshop-card:hover .workshop-card-action i {
+    transform: translateX(3px);
+}
+*/

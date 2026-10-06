@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link
+        rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+    />
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/login.css">
+    <title>登录/注册</title>
+</head>
+<body>
+    <h1 id="main-title">新能源汽车数据存储系统</h1>
+
+    <!-- Area for redirect messages -->
+    <div id="redirect-message-area" class="redirect-message"></div>
+
+    <div class="container" id="container">
+        <div class="form-container sign-up-container">
+            <form id="signup-form">
+                <h1>建立账号</h1>
+                <div class="social-container">
+                    <a href="#" class="social" title="Visit WeChat"><i class="fa-brands fa-weixin"></i></a>
+                    <a href="#" class="social" title="Visit TikTok"><i class="fa-brands fa-tiktok"></i></a>
+                    <a href="#" class="social" title="Visit Weibo"><i class="fa-brands fa-weibo"></i></a>
+                </div>
+                <span>或使用您的电子邮件进行注册</span>
+                <input type="text" id="signup-username" placeholder="使用者名稱" required />
+                <input type="email" id="signup-email" placeholder="電子郵件" required />
+                <input type="password" id="signup-password" placeholder="密碼" required />
+                <button type="submit">注册</button>
+                <p id="signup-message" class="message"></p>
+            </form>
+        </div>
+
+        <div class="form-container sign-in-container">
+            <form id="login-form">
+                <h1>登录</h1>
+                <div class="social-container">
+                    <a href="#" class="social" title="Visit WeChat"><i class="fa-brands fa-weixin"></i></a>
+                    <a href="#" class="social" title="Visit TikTok"><i class="fa-brands fa-tiktok"></i></a>
+                    <a href="#" class="social" title="Visit Weibo"><i class="fa-brands fa-weibo"></i></a>
+                </div>
+                <span>或使用您的账号</span>
+                <input type="text" id="login-identifier" placeholder="用户名或电子邮件" required />
+                <input type="password" id="login-password" placeholder="密码" required />
+                <a href="#" id="forgot-password-link">忘记密码?</a>
+                <button type="submit">登录</button>
+                <p id="login-error-message" class="message"></p>
+            </form>
+        </div>
+
+        <!-- 修改忘記密碼表單容器，添加樣式 -->
+        <div class="form-container forgot-password-container" style="position: absolute; top: 0; height: 100%; width: 50%; left: 0; transition: all 0.6s ease-in-out; opacity: 0; z-index: 0; background-color: var(--white-color); pointer-events: none;">
+            <form id="forgot-password-form">
+                <h1>重设密码</h1>
+                <span>输入您的注册电子邮件以接收密码重置链接</span>
+                <input type="email" id="forgot-email" placeholder="电子邮箱" required />
+                <button type="submit">发送重置链接</button>
+                <p id="forgot-message" class="message"></p>
+                <a href="#" id="back-to-login-link" style="margin-top: 10px;">返回登录</a>
+            </form>
+        </div>
+
+        <div class="overlay-container">
+            <div class="overlay">
+                <div class="overlay-panel overlay-left">
+                    <h1>  欢迎回來！</h1>
+                    <p>请使用您的个人信息登陆</p>
+                    <button class="ghost" id="signIn">登入</button>
+                </div>
+                <div class="overlay-panel overlay-right">
+                    <h1>你好，朋友！</h1>
+                    <p>输入您的个人详细信息，与我们一起开始旅程</p>
+                    <button class="ghost" id="signUp">注册</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const signUpButton = document.getElementById('signUp');
+        const signInButton = document.getElementById('signIn');
+        const container = document.getElementById('container');
+        const loginForm = document.getElementById('login-form');
+        const signupForm = document.getElementById('signup-form');
+        const loginIdentifierInput = document.getElementById('login-identifier');
+        const loginPasswordInput = document.getElementById('login-password');
+        const loginErrorMessage = document.getElementById('login-error-message');
+        const signupUsernameInput = document.getElementById('signup-username');
+        const signupEmailInput = document.getElementById('signup-email');
+        const signupPasswordInput = document.getElementById('signup-password');
+        const signupMessage = document.getElementById('signup-message');
+        const forgotPasswordLink = document.getElementById('forgot-password-link');
+        const forgotPasswordContainer = document.querySelector('.forgot-password-container');
+        const signInContainer = document.querySelector('.sign-in-container');
+        const signupContainer = document.querySelector('.sign-up-container');
+        const forgotPasswordForm = document.getElementById('forgot-password-form');
+        const forgotEmailInput = document.getElementById('forgot-email');
+        const forgotMessage = document.getElementById('forgot-message');
+        const backToLoginLink = document.getElementById('back-to-login-link');
+        const redirectMessageArea = document.getElementById('redirect-message-area');
+
+        // 輔助函數來顯示/隱藏表單
+        function showForm(formToShow, formToHide) {
+            // 確保 formToHide 也是 .form-container 的一部分，避免影響其他元素
+            const formsToHide = Array.isArray(formToHide) ? formToHide : (formToHide ? [formToHide] : []);
+
+            if (formToShow) {
+                formToShow.style.opacity = '1';
+                formToShow.style.zIndex = '5'; // 提高層級以顯示在前面
+                formToShow.style.pointerEvents = 'auto'; // 允許互動
+            }
+
+            formsToHide.forEach(form => {
+                if (form) {
+                    form.style.opacity = '0';
+                    // 將 z-index 設為較低的值，確保在 formToShow 後面
+                    // 考慮到 sign-in 可能是 2，sign-up 是 1 或 5，forgot 設為 1 應該可以
+                    form.style.zIndex = '1';
+                    form.style.pointerEvents = 'none'; // 禁止互動
+                }
+            });
+        }
+
+        // --- Display Redirect Messages on Load ---
+        document.addEventListener('DOMContentLoaded', () => {
+            const loginRedirectMsg = localStorage.getItem('loginRedirectMessage');
+            const generalRedirectMsg = localStorage.getItem('redirectMessage');
+
+            if (loginRedirectMsg) {
+                if (redirectMessageArea) {
+                    redirectMessageArea.textContent = loginRedirectMsg;
+                    redirectMessageArea.className = 'redirect-message error'; // Style as error
+                    redirectMessageArea.style.display = 'block';
+                }
+                localStorage.removeItem('loginRedirectMessage'); // Clear after displaying
+            } else if (generalRedirectMsg) {
+                 if (redirectMessageArea) {
+                    redirectMessageArea.textContent = generalRedirectMsg;
+                    redirectMessageArea.className = 'redirect-message info'; // Style as info/warning
+                    redirectMessageArea.style.display = 'block';
+                 }
+                 localStorage.removeItem('redirectMessage'); // Clear after displaying
+            }
+            
+            // --- Existing Initialization Logic ---
+            if (!container.classList.contains('right-panel-active')) {
+                 showForm(signInContainer, [forgotPasswordContainer, signupContainer]);
+                 signInContainer.style.zIndex = '2'; 
+             } else {
+                 showForm(signupContainer, [signInContainer, forgotPasswordContainer]);
+                 signupContainer.style.zIndex = '5'; 
+             }
+        });
+
+        signUpButton.addEventListener('click', () => {
+            container.classList.add("right-panel-active");
+            loginErrorMessage.textContent = '';
+            signupMessage.textContent = '';
+            // 切換到註冊視圖時，顯示註冊表單，隱藏登錄和忘記密碼表單
+            showForm(signupContainer, [signInContainer, forgotPasswordContainer]);
+        });
+
+        signInButton.addEventListener('click', () => {
+            container.classList.remove("right-panel-active");
+            loginErrorMessage.textContent = '';
+            signupMessage.textContent = '';
+            // 切換回登錄視圖時，顯示登錄表單，隱藏註冊和忘記密碼表單
+            showForm(signInContainer, [signupContainer, forgotPasswordContainer]);
+             // 確保 sign-in 有正確的基礎 z-index (即使之前被隱藏)
+             signInContainer.style.zIndex = '2';
+        });
+
+        // 忘記密碼鏈接點擊事件
+        forgotPasswordLink.addEventListener('click', (event) => {
+            event.preventDefault(); // 阻止默認的鏈接跳轉行為
+            // 顯示忘記密碼表單，隱藏登錄表單 (註冊表單此時應已隱藏)
+            showForm(forgotPasswordContainer, signInContainer);
+            loginErrorMessage.textContent = ''; // 清除可能存在的登錄錯誤信息
+            forgotMessage.textContent = ''; // 清除忘記密碼表單的消息
+        });
+
+        // 返回登錄鏈接點擊事件
+        backToLoginLink.addEventListener('click', (event) => {
+            event.preventDefault();
+            // 顯示登錄表單，隱藏忘記密碼表單
+            showForm(signInContainer, forgotPasswordContainer);
+            forgotMessage.textContent = ''; // 清除忘記密碼表單的消息
+             // 確保 sign-in 有正確的基礎 z-index
+             signInContainer.style.zIndex = '2';
+        });
+
+        loginForm.addEventListener('submit', async (event) => {
+            event.preventDefault();
+            // Clear previous errors by removing the error class and text
+            loginErrorMessage.classList.remove('error'); 
+            loginErrorMessage.textContent = ''; 
+            // Clear any existing timeout when starting a new submission
+            if (window.loginErrorTimeout) {
+                clearTimeout(window.loginErrorTimeout);
+            }
+
+            const identifier = loginIdentifierInput.value;
+            const password = loginPasswordInput.value;
+
+            try {
+                const response = await fetch('/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ identifier, password }),
+                });
+
+                const data = await response.json();
+
+                if (response.ok && data.success && data.token) {
+                    console.log('登录成功:', data);
+                    // 存储 token 和用户信息到 localStorage
+                    localStorage.setItem('authToken', data.token);
+                    localStorage.setItem('username', data.username); // 可选，方便显示
+                    localStorage.setItem('userRole', data.role);     // 存储角色
+
+                    window.location.href = '/html/selection.html'; 
+                } else {
+                    console.error('登录失败:', data.message);
+                    loginErrorMessage.textContent = data.message || '登录失败，请检查你的凭证或联系管理员。';
+                    loginErrorMessage.classList.add('error');
+                    // Set timeout to hide the message after 1 second
+                    if (window.loginErrorTimeout) clearTimeout(window.loginErrorTimeout); // Clear previous timeout
+                    window.loginErrorTimeout = setTimeout(() => {
+                        loginErrorMessage.classList.remove('error');
+                        loginErrorMessage.textContent = '';
+                    }, 1000); // Hide after 1000ms (1 second)
+                }
+            } catch (error) {
+                console.error('登录请求错误:', error);
+                loginErrorMessage.textContent = '登录请求失败，请稍后再试。';
+                loginErrorMessage.classList.add('error');
+                // Set timeout to hide the message after 1 second
+                if (window.loginErrorTimeout) clearTimeout(window.loginErrorTimeout); // Clear previous timeout
+                window.loginErrorTimeout = setTimeout(() => {
+                    loginErrorMessage.classList.remove('error');
+                    loginErrorMessage.textContent = '';
+                }, 1000); // Hide after 1000ms (1 second)
+            }
+        });
+
+        signupForm.addEventListener('submit', async (event) => {
+            event.preventDefault();
+            signupMessage.textContent = '';
+            signupMessage.classList.remove('error', 'success');
+
+            const username = signupUsernameInput.value;
+            const email = signupEmailInput.value;
+            const password = signupPasswordInput.value;
+
+            try {
+                const response = await fetch('/register', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ username, email, password }),
+                });
+
+                const data = await response.json();
+
+                if (response.ok && data.success) {
+                    console.log('注册成功:', data);
+                    signupMessage.textContent = data.message + ' 请切换至登录页面登录。';
+                    signupMessage.classList.add('success');
+                    signupForm.reset();
+                } else {
+                    console.error('注册失败:', data.message);
+                    signupMessage.textContent = data.message || '注册失败，请检查你输入的信息。';
+                    signupMessage.classList.add('error');
+                }
+            } catch (error) {
+                console.error('注册请求错误:', error);
+                signupMessage.textContent = '注册请求失败，请稍后再试。';
+                signupMessage.classList.add('error');
+            }
+        });
+
+        forgotPasswordForm.addEventListener('submit', async (event) => {
+            event.preventDefault();
+            forgotMessage.textContent = '';
+            forgotMessage.classList.remove('error', 'success');
+
+            const email = forgotEmailInput.value;
+
+            try {
+                const response = await fetch('/forgot-password', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ email }),
+                });
+
+                const data = await response.json();
+
+                if (response.ok && data.success) {
+                    console.log('请求密码重置成功:', data);
+                    forgotMessage.textContent = data.message || '密码重置邮件已发送，请检查您的邮箱。';
+                    forgotMessage.classList.add('success');
+                    forgotPasswordForm.reset();
+                } else {
+                    console.error('请求密码重置失败:', data.message);
+                    forgotMessage.textContent = data.message || '请求失败，请检查您的电子邮件地址。';
+                    forgotMessage.classList.add('error');
+                }
+            } catch (error) {
+                console.error('请求密码重置错误:', error);
+                forgotMessage.textContent = '请求失败，请稍后再试。';
+                forgotMessage.classList.add('error');
+            }
+        });
+    </script>
+
+</body>
+</html>
