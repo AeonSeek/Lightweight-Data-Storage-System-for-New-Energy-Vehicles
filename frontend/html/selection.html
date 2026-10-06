@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>选择面板 - 新能源汽车数据存储系统</title>
+    <link rel="stylesheet" href="/css/style.css"> <!-- 复用通用样式 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" /> <!-- Font Awesome for icons -->
+    <style>
+        /* Inherit body styles from style.css */
+        /* Specific styles for selection page, aiming for admin.html look and feel */
+
+        .app-header {
+            background-color: var(--bg-secondary); /* Use theme variable */
+            color: var(--text-primary);
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: var(--shadow-md);
+            position: sticky;
+            top: 0;
+            z-index: 1010;
+            border-bottom: 1px solid var(--border-color);
+        }
+        .app-header h1 {
+            margin: 0;
+            font-size: 1.5em;
+            font-weight: 600;
+            color: var(--accent-primary);
+        }
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        .header-actions button {
+            color: var(--text-primary);
+            text-decoration: none;
+            background: none;
+            border: 1px solid var(--border-color);
+            cursor: pointer;
+            font-size: 0.9em;
+            padding: 8px 12px;
+            border-radius: 4px;
+            transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+        .header-actions button:hover {
+            background-color: var(--bg-tertiary);
+            border-color: var(--accent-primary);
+            color: var(--accent-primary);
+        }
+        .header-actions button i {
+            font-size: 1.1em; /* Ensure icons are slightly larger than text */
+        }
+
+        .main-content-wrapper {
+            width: 90%;
+            max-width: 600px; /* Smaller max-width for selection page */
+            margin: 50px auto; /* More top margin */
+            background-color: var(--bg-secondary);
+            padding: 40px;
+            border-radius: 8px;
+            box-shadow: var(--shadow-lg);
+            text-align: center; /* Center the content inside */
+        }
+
+        .main-content-wrapper h2 {
+            font-size: 1.8em;
+            color: var(--text-primary);
+            margin-bottom: 30px;
+        }
+
+        .selection-button {
+            display: block;
+            width: 80%; /* Relative width */
+            max-width: 300px; /* Max width for larger buttons */
+            padding: 12px 20px;
+            margin: 20px auto;
+            font-size: 1.1em;
+            font-weight: 600;
+            color: var(--bg-secondary); /* Text color for contrast against accent */
+            background-color: var(--accent-primary);
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.2s ease, filter 0.2s ease;
+            text-decoration: none;
+            text-align: center;
+            line-height: 1.5;
+        }
+        .selection-button:hover {
+            filter: brightness(90%);
+        }
+        .selection-button i {
+            margin-right: 8px;
+        }
+
+        /* Logout button specific style if needed, or rely on .header-actions button */
+        #selection-logout-btn {
+            /* Example: add more specific styling if different from theme toggle */
+            /* border-color: var(--status-nok-border); */
+            /* color: var(--status-nok-border); */
+        }
+        /* #selection-logout-btn:hover {
+            background-color: var(--status-nok-bg);
+            border-color: var(--status-nok-border); 
+        } */
+
+    </style>
+</head>
+<body>
+    <header class="app-header">
+        <h1>选择操作面板</h1>
+        <div class="header-actions">
+            <button id="theme-toggle-btn" title="切换主题">
+                <i class="fas fa-sun"></i> <!-- Icon will be updated by theme.js -->
+            </button>
+            <button id="selection-logout-btn" title="登出">
+                <i class="fas fa-sign-out-alt"></i> 登出
+            </button>
+        </div>
+    </header>
+
+    <div class="main-content-wrapper">
+        <h2>请选择您要进入的面板</h2>
+        <a href="/html/index.html" class="selection-button"><i class="fas fa-tv"></i>监控面板</a>
+        <a href="/html/admin_dashboard.html" class="selection-button" id="admin-panel-link" style="display: none;"><i class="fas fa-user-shield"></i>管理员面板</a>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const userRole = localStorage.getItem('userRole');
+            const adminPanelLink = document.getElementById('admin-panel-link');
+            const logoutButton = document.getElementById('selection-logout-btn'); // Updated ID
+
+            const token = localStorage.getItem('authToken');
+            if (!token) {
+                window.location.href = '/html/login.html';
+                return;
+            }
+
+            if (userRole === 'system_admin') {
+                if(adminPanelLink) adminPanelLink.style.display = 'block';
+            }
+
+            if(logoutButton) {
+                logoutButton.addEventListener('click', () => {
+                    localStorage.removeItem('authToken');
+                    localStorage.removeItem('username');
+                    localStorage.removeItem('userRole');
+                    window.location.href = '/html/login.html';
+                });
+            }
+        });
+    </script>
+    <script src="/js/theme.js"></script>
+</body>
+</html> 

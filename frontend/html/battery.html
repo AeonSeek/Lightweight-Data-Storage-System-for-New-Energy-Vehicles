@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8"> <meta name="viewport" content="width=device-width, initial-scale=1.0"> <title>电池生产车间 - 实时监控</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
+    <link rel="stylesheet" href="/css/style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns@3.0.0/dist/chartjs-adapter-date-fns.bundle.min.js"></script>
+</head>
+<body>
+    <header>
+        <h1>新能源汽车生产车间</h1>
+        <button id="theme-toggle-btn" title="切换主题">
+            <i class="fas fa-sun"></i>
+        </button>
+    </header>
+    <nav>
+        <button class="nav-toggle" aria-label="Toggle navigation" aria-expanded="false">
+            <i class="fas fa-bars" aria-hidden="true"></i>
+        </button>
+        <ul id="nav-menu"><li><a href="/html/index.html" id="nav-index">首页概览</a></li><li><a href="/html/battery.html" id="nav-battery">电池车间</a></li><li><a href="/html/welding.html" id="nav-welding">焊接车间</a></li><li><a href="/html/assembly.html" id="nav-assembly">总装车间</a></li><li><a href="/html/testing.html" id="nav-testing">检测车间</a></li></ul>
+    </nav>
+    <main>
+        <div class="main-title-container">
+            <h2>电池生产车间 - 数据监控</h2>
+            <button id="export-data-button" class="export-button-main" title="导出当前页面数据"><i class="bi bi-download"></i> 导出数据</button>
+        </div>
+        <div class="workshop-layout">
+            <div class="data-card gauge-card" data-key="storage_temp" data-status="idle">
+                <div class="data-card-header">
+                    <i class="bi bi-thermometer-half data-card-icon"></i> <span class="data-card-label">存储区温度</span> <span class="data-card-status-indicator">--</span>
+                </div>
+                <div class="data-card-content gauge-chart-container"> <canvas id="chart_storage_temp"></canvas> <span class="gauge-value-text" id="value_storage_temp">-</span> </div>
+            </div>
+            <div class="data-card gauge-card" data-key="drying_humidity" data-status="idle">
+                <div class="data-card-header">
+                    <i class="bi bi-moisture data-card-icon"></i> <span class="data-card-label">干燥房湿度</span> <span class="data-card-status-indicator">--</span>
+                </div>
+                <div class="data-card-content gauge-chart-container"> <canvas id="chart_drying_humidity"></canvas> <span class="gauge-value-text" id="value_drying_humidity">-</span> </div>
+            </div>
+            <div class="data-card gauge-card" data-key="seal_pressure" data-status="idle">
+                 <div class="data-card-header">
+                     <i class="bi bi-speedometer2 data-card-icon"></i> <span class="data-card-label">封口压力</span> <span class="data-card-status-indicator">--</span>
+                 </div>
+                 <div class="data-card-content gauge-chart-container"> <canvas id="chart_seal_pressure"></canvas> <span class="gauge-value-text" id="value_seal_pressure">-</span> </div>
+            </div>
+             <div class="data-card" data-key="gas_ppm" data-status="idle">
+                 <div class="data-card-header">
+                    <i class="bi bi-wind data-card-icon"></i> <span class="data-card-label">可燃气体</span> <span class="data-card-status-indicator">--</span>
+                 </div>
+                 <div class="data-card-content"> <span class="data-card-value" id="gas_ppm">-</span> </div>
+             </div>
+
+            <div class="data-card chart-card" data-key="formation_voltage" data-status="idle">
+                 <div class="data-card-header">
+                    <i class="bi bi-lightning-charge-fill data-card-icon"></i> <span class="data-card-label">化成电压 (V) - 趋势</span> <span class="data-card-status-indicator">--</span>
+                 </div>
+                 <div class="data-card-content line-chart-container"> <canvas id="chart_line_formation_voltage"></canvas> </div>
+             </div>
+             <div class="data-card chart-card" data-key="formation_current" data-status="idle">
+                 <div class="data-card-header">
+                    <i class="bi bi-lightning-charge data-card-icon"></i> <span class="data-card-label">化成电流 (A) - 趋势</span> <span class="data-card-status-indicator">--</span>
+                 </div>
+                 <div class="data-card-content line-chart-container"> <canvas id="chart_line_formation_current"></canvas> </div>
+             </div>
+
+             <div class="data-card" data-key="cleanliness_level" data-status="idle">
+                 <div class="data-card-header">
+                    <i class="bi bi-grid-1x2-fill data-card-icon"></i> <span class="data-card-label">注液区洁净度</span> <span class="data-card-status-indicator">--</span>
+                 </div>
+                 <div class="data-card-content"> <span class="data-card-value" id="cleanliness_level">-</span> </div>
+             </div>
+             <div class="data-card" data-key="ocv_voltage" data-status="idle">
+                 <div class="data-card-header">
+                    <i class="bi bi-graph-up data-card-icon"></i> <span class="data-card-label">OCV 测试电压</span> <span class="data-card-status-indicator">--</span>
+                 </div>
+                 <div class="data-card-content"> <span class="data-card-value" id="ocv_voltage">-</span> </div>
+             </div>
+             <div class="data-card" data-key="smoke_status" data-status="idle">
+                 <div class="data-card-header">
+                    <i class="bi bi-fire data-card-icon"></i> <span class="data-card-label">烟雾传感器</span> <span class="data-card-status-indicator">--</span>
+                 </div>
+                 <div class="data-card-content"> <span class="data-card-value" id="smoke_status">-</span> </div>
+             </div>
+        </div>
+        <div id="last-updated">最后更新时间: -</div>
+    </main>
+    <footer><p>&copy; 2025 NEV Workshop Monitor (v5 - Polished UI). All Rights Reserved.</p></footer>
+    <button id="debug-button">手动获取数据 (Debug)</button> <pre id="debug-output"></pre>
+    <script src="/js/script.js"></script>
+    <script src="/js/theme.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            setActiveNav('battery');
+            initializeGaugeChart('storage_temp', 10, 40, '°C');
+            initializeGaugeChart('drying_humidity', 0, 20, '%');
+            initializeGaugeChart('seal_pressure', 700, 900, 'kPa');
+            initializeLineChart('formation_voltage', '化成电压', 'V');
+            initializeLineChart('formation_current', '化成电流', 'A');
+            const lineKeys = ['formation_voltage', 'formation_current'];
+            startDataFetching('battery', lineKeys);
+            setupDebugButton('battery', lineKeys);
+            setupExportButton('battery');
+        });
+    </script>
+</body>
+</html> 

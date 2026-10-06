@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8"> <meta name="viewport" content="width=device-width, initial-scale=1.0"> <title>焊接车间 - 实时监控</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
+    <link rel="stylesheet" href="/css/style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns@3.0.0/dist/chartjs-adapter-date-fns.bundle.min.js"></script>
+</head>
+<body>
+    <header>
+        <h1>新能源汽车生产车间</h1>
+        <button id="theme-toggle-btn" title="切换主题">
+            <i class="fas fa-sun"></i>
+        </button>
+    </header>
+    <nav>
+        <button class="nav-toggle" aria-label="Toggle navigation" aria-expanded="false">
+            <i class="fas fa-bars" aria-hidden="true"></i>
+        </button>
+        <ul id="nav-menu"><li><a href="/html/index.html" id="nav-index">首页概览</a></li><li><a href="/html/battery.html" id="nav-battery">电池车间</a></li><li><a href="/html/welding.html" id="nav-welding">焊接车间</a></li><li><a href="/html/assembly.html" id="nav-assembly">总装车间</a></li><li><a href="/html/testing.html" id="nav-testing">检测车间</a></li></ul>
+    </nav>
+    <main>
+        <div class="main-title-container">
+            <h2>焊接车间 - 数据监控</h2>
+            <button id="export-data-button" class="export-button-main" title="导出当前页面数据"><i class="bi bi-download"></i> 导出数据</button>
+        </div>
+        <div class="workshop-layout">
+             <div class="data-card gauge-card" data-key="weld_quality_rate" data-status="idle">
+                 <div class="data-card-header"> <i class="bi bi-check-circle-fill data-card-icon"></i> <span class="data-card-label">焊点合格率</span> <span class="data-card-status-indicator">--</span> </div>
+                 <div class="data-card-content gauge-chart-container"> <canvas id="chart_weld_quality_rate"></canvas> <span class="gauge-value-text" id="value_weld_quality_rate">-</span> </div>
+             </div>
+             <div class="data-card gauge-card" data-key="cooling_temp" data-status="idle">
+                 <div class="data-card-header"> <i class="bi bi-thermometer-snow data-card-icon"></i> <span class="data-card-label">焊枪冷却水温</span> <span class="data-card-status-indicator">--</span> </div>
+                 <div class="data-card-content gauge-chart-container"> <canvas id="chart_cooling_temp"></canvas> <span class="gauge-value-text" id="value_cooling_temp">-</span> </div>
+             </div>
+             <div class="data-card gauge-card" data-key="noise_db" data-status="idle">
+                 <div class="data-card-header"> <i class="bi bi-volume-up-fill data-card-icon"></i> <span class="data-card-label">噪音水平</span> <span class="data-card-status-indicator">--</span> </div>
+                 <div class="data-card-content gauge-chart-container"> <canvas id="chart_noise_db"></canvas> <span class="gauge-value-text" id="value_noise_db">-</span> </div>
+             </div>
+             <div class="data-card" data-key="aqi" data-status="idle">
+                 <div class="data-card-header"> <i class="bi bi-wind data-card-icon"></i> <span class="data-card-label">空气质量指数</span> <span class="data-card-status-indicator">--</span> </div>
+                 <div class="data-card-content"> <span class="data-card-value" id="aqi">-</span> </div>
+             </div>
+
+            <div class="data-card chart-card" data-key="robot1_current" data-status="idle">
+                <div class="data-card-header"> <i class="bi bi-lightning-charge data-card-icon"></i> <span class="data-card-label">机器人1电流 (A) - 趋势</span> <span class="data-card-status-indicator">--</span> </div>
+                <div class="data-card-content line-chart-container"> <canvas id="chart_line_robot1_current"></canvas> </div>
+            </div>
+            <div class="data-card chart-card" data-key="robot1_voltage" data-status="idle">
+                <div class="data-card-header"> <i class="bi bi-lightning-charge-fill data-card-icon"></i> <span class="data-card-label">机器人1电压 (V) - 趋势</span> <span class="data-card-status-indicator">--</span> </div>
+                <div class="data-card-content line-chart-container"> <canvas id="chart_line_robot1_voltage"></canvas> </div>
+            </div>
+
+            <div class="data-card" data-key="laser_power" data-status="idle">
+                 <div class="data-card-header"> <i class="bi bi-plug-fill data-card-icon"></i> <span class="data-card-label">激光焊接功率</span> <span class="data-card-status-indicator">--</span> </div>
+                 <div class="data-card-content"> <span class="data-card-value" id="laser_power">-</span> </div>
+             </div>
+             <div class="data-card" data-key="robot_status" data-status="idle">
+                 <div class="data-card-header"> <i class="bi bi-robot data-card-icon"></i> <span class="data-card-label">焊接机器人状态</span> <span class="data-card-status-indicator">--</span> </div>
+                 <div class="data-card-content"> <span class="data-card-value" id="robot_status">-</span> </div>
+             </div>
+        </div>
+        <div id="last-updated">最后更新时间: -</div>
+    </main>
+    <footer><p>&copy; 2025 NEV Workshop Monitor (v5 - Polished UI). All Rights Reserved.</p></footer>
+    <button id="debug-button">手动获取数据 (Debug)</button> <pre id="debug-output"></pre>
+    <script src="/js/script.js"></script>
+    <script src="/js/theme.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            setActiveNav('welding');
+            initializeGaugeChart('weld_quality_rate', 90, 100, '%');
+            initializeGaugeChart('cooling_temp', 15, 40, '°C');
+            initializeGaugeChart('noise_db', 60, 100, 'dB');
+            initializeLineChart('robot1_current', '机器人1电流', 'A');
+            initializeLineChart('robot1_voltage', '机器人1电压', 'V');
+            const lineKeys = ['robot1_current', 'robot1_voltage'];
+            startDataFetching('welding', lineKeys);
+            setupDebugButton('welding', lineKeys);
+            setupExportButton('welding');
+        });
+    </script>
+</body>
+</html> 

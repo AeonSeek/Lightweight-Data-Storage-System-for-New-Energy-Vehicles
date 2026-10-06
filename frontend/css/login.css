@@ -1,0 +1,458 @@
+/* 移除字体导入 */
+
+:root {
+    /* 更新為單一亮藍色 */
+    --original-pink: #00808c; /* 設定為統一的亮藍色 */
+    --original-blue: #1a79b8; /* 設定為統一的亮藍色 */
+    --white-color: #ffffff;
+    --light-gray-inputs: #eeeeee; /* 原始输入框颜色 */
+    --medium-gray-border: #dddddd; /* 原始社交图标边框 */
+    --text-color: #333333;
+}
+
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    min-height: 100vh;
+    background-image: url('/images/login_2.png'); /* 背景圖片 */
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    background-color: #f6f5f7;
+    /* 更新為簡體中文字體棧 */
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans SC", "Microsoft YaHei", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+    color: var(--text-color);
+}
+
+.container {
+  position: relative;
+  width: 768px;
+  max-width: 100%;
+  min-height: 480px; /* 恢复原始高度 */
+  background-color: var(--white-color);
+  border-radius: 10px;
+  box-shadow: 0 14px 28px rgba(0, 0, 0, 0.25), 0 10px 10px rgba(0, 0, 0, 0.22); /* 恢复原始阴影 */
+  overflow: hidden;
+}
+
+h1{
+    font-weight: bold;
+    margin: 0;
+    color: var(--text-color); /* 确保颜色 */
+    font-size: 30px; /* 调整回接近原始大小 */
+}
+
+p{
+    font-size: 14px;
+    font-weight: 100;
+    line-height: 20px;
+    letter-spacing: 0.5px;
+    margin: 20px 0 30px;
+    color: var(--white-color); /* Overlay text is white */
+}
+
+span{
+    font-size: 12px;
+    color: var(--text-color); /* 确保颜色 */
+    margin-bottom: 10px; /* 调整间距 */
+}
+
+a{
+    color: var(--text-color); /* 确保颜色 */
+    font-size: 14px;
+    text-decoration: none;
+    margin: 15px 0;
+}
+
+/* --- 恢复原始按钮样式 --- */
+button{
+    margin-top: 10px; /* 基礎 margin */
+    border: 1px solid var(--original-blue);
+    background-color: var(--original-blue);
+    color: var(--white-color);
+    font-size: 12px;
+    font-weight: bold;
+    padding: 12px 45px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    border-radius: 20px;
+    transition: transform 0.1s ease-in-out, background-color 0.1s ease-in-out;
+    cursor: pointer;
+}
+
+/* 恢复激活面板时按钮变色 */
+.container.right-panel-active button:not(.ghost){
+    background-color: var(--original-pink);
+    border-color: var(--original-pink);
+}
+
+/* 恢复 Ghost 按钮样式 */
+button.ghost{
+    background-color: transparent;
+    border-color: var(--white-color);
+    /* transition: 0.5s; /* 可以保留或移除 */
+}
+
+button.ghost:hover{
+    /* 恢复原始 hover 效果 */
+    border-width: 2px;
+    transform: scale(1.1);
+    /* 移除背景填充 hover */
+    /* background-color: transparent; */
+    /* color: var(--white-color); */
+}
+
+/* 為登入按鈕添加額外間距 */
+.sign-in-container form button[type="submit"] {
+    margin-top: 20px; /* 增加頂部間距 */
+}
+
+button:active{
+    transform: scale(0.95);
+}
+
+/* --- 恢复原始输入框样式 --- */
+form{
+    background-color: var(--white-color);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    padding: 50px 50px; /* 增加垂直 padding */
+    /* height: 100%; */ /* 移除 height: 100%，讓高度自適應 */
+    text-align: center;
+}
+
+input{
+    background-color: var(--light-gray-inputs); /* 恢复填充背景 */
+    border: none;                 /* 恢复无边框 */
+    padding: 12px 15px;           /* 恢复原始 padding */
+    margin: 8px 0;                /* 恢复原始 margin */
+    width: 100%;
+    font-size: 14px;              /* 调整字体大小 */
+    color: var(--text-color);     /* 确保文字颜色 */
+    border-radius: 5px;           /* 可以加个小圆角 */
+}
+
+input:focus {
+    outline: none;
+    /* 可以添加细微的 focus 效果，比如轻微阴影 */
+    /* box-shadow: 0 0 2px rgba(63, 94, 251, 0.5); */
+}
+
+/* --- 恢复原始社交图标样式 --- */
+.social-container{
+    margin: 20px 0;
+}
+
+.social-container a{
+    border: 1px solid var(--medium-gray-border); /* 恢复边框 */
+    border-radius: 50%;                     /* 恢复圆形 */
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    width: 40px;                            /* 恢复原始尺寸 */
+    height: 40px;
+    margin: 0 5px;
+    color: var(--text-color);               /* 恢复原始图标颜色 */
+    transition: transform 0.3s ease, background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease; /* 恢复原始过渡 */
+}
+
+.social-container a:hover{
+    transform: scale(1.1);                  /* 恢复缩放 */
+    background-color: var(--original-blue); /* 恢复悬停背景 */
+    border-color: var(--original-blue);     /* 统一边框颜色 */
+    color: var(--white-color);              /* 恢复悬停图标颜色 */
+}
+
+/* 恢复激活面板时社交图标悬停颜色 */
+.container.right-panel-active .social-container a:hover{
+    background-color: var(--original-pink);
+    border-color: var(--original-pink);
+}
+
+/* --- Layout & Animation (保持功能性修复) --- */
+
+.form-container{
+    position: absolute;
+    top: 0;
+    height: 100%;
+    transition: all 0.6s ease-in-out;
+    /* 移除漸變背景和白色文字 */
+    /* background: linear-gradient(90deg, var(--original-pink) 0%, var(--original-blue) 100%); */
+    /* color: var(--white-color); */
+    /* 移除 z-index */
+    /* z-index: 10; */
+}
+
+/* 移除針對 form-container h1 的樣式 */
+/* .form-container h1 {
+    color: var(--white-color);
+    margin-bottom: 20px;
+} */
+
+/* --- 恢復原始輸入框样式 --- */
+form{
+    background-color: var(--white-color); /* 恢復表單的白色背景 */
+    /* background-color: transparent; */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    padding: 50px 50px;
+    text-align: center;
+}
+
+input{
+    background-color: var(--light-gray-inputs); /* 恢復淺灰色背景 */
+    border: none; /* 恢復無邊框 */
+    /* background-color: rgba(255, 255, 255, 0.15); */
+    /* border: 1px solid rgba(255, 255, 255, 0.5); */
+    padding: 12px 15px;
+    margin: 8px 0;
+    width: 100%;
+    font-size: 14px;
+    color: var(--text-color); /* 恢復輸入文字顏色 */
+    border-radius: 5px;
+}
+
+input::placeholder {
+    color: var(--text-color); /* 恢復 Placeholder 顏色 */
+    opacity: 0.7; /* 可選：略微調淡 */
+    /* color: rgba(255, 255, 255, 0.7); */
+}
+
+input:focus {
+    outline: none;
+    /* 移除 focus 樣式 */
+    /* background-color: rgba(255, 255, 255, 0.25); */
+    /* border-color: var(--white-color); */
+}
+
+/* --- 恢復原始社交图标样式 (無需更改，已被註釋) --- */
+/* ... */
+
+/* --- 移除 form-container 內的連結樣式 --- */
+/* .form-container a {
+    color: var(--white-color);
+    font-size: 14px;
+    text-decoration: none;
+    margin: 15px 0;
+    transition: opacity 0.2s ease-in-out;
+}
+
+.form-container a:hover {
+    opacity: 0.8;
+} */
+
+/* ... rest of css ... */
+
+/* 移除 Z-index 調整 */
+.overlay-container {
+    /* ... */
+    z-index: 100; /* 保留 overlay 的 z-index */
+}
+/* .form-container {
+    z-index: 10;
+} */
+
+/* .container.right-panel-active .sign-in-container {
+    z-index: 15;
+} */
+
+/* .container.right-panel-active .sign-up-container {
+    z-index: 20;
+} */
+
+.sign-in-container{
+    left: 0;
+    width: 50%;
+    z-index: 2;
+    opacity: 1;
+}
+
+.container.right-panel-active .sign-in-container{
+    transform: translateX(100%);
+    opacity: 0;
+    z-index: 1;
+}
+
+.sign-up-container{
+    left: 0;
+    width: 50%;
+    opacity: 0;
+    z-index: 1;
+}
+
+.container.right-panel-active .sign-up-container{
+    transform: translateX(100%);
+    opacity: 1;
+    z-index: 5;
+    animation: show 0.6s;
+}
+
+@keyframes show{
+    0%, 49.99%{
+        opacity: 0;
+        z-index: 1;
+    }
+    50%, 100%{
+        opacity: 1;
+        z-index: 5;
+    }
+}
+
+.overlay-container{
+    position: absolute;
+    top: 0;
+    left: 50%;
+    width: 50%;
+    height: 100%;
+    overflow: hidden;
+    transition: transform 0.6s ease-in-out;
+    z-index: 100;
+}
+
+.container.right-panel-active .overlay-container{
+    transform: translateX(-100%);
+}
+
+.overlay{
+    position: relative;
+    left: -100%;
+    height: 100%;
+    width: 200%;
+    /* 恢复原始 Gradient */
+    background: var(--original-pink); /* Fallback */
+    background: linear-gradient(90deg, var(--original-pink) 0%, var(--original-blue) 100%);
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: 0 0;
+    color: var(--white-color);
+    transform: translateX(0);
+    transition: transform 0.6s ease-in-out;
+}
+
+.container.right-panel-active .overlay{
+    transform: translateX(50%);
+}
+
+.overlay-panel{
+    position: absolute;
+    top: 0;
+    height: 100%;
+    width: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    padding: 0 40px;
+    text-align: center;
+    transform: translateX(0);
+    transition: transform 0.6s ease-in-out;
+}
+
+.overlay-left{
+    transform: translateX(-20%);
+}
+
+.container.right-panel-active .overlay-left{
+    transform: translateX(0);
+}
+
+.overlay-right{
+    right: 0;
+    transform: translateX(0);
+}
+
+/* 保持修复的选择器 */
+.container.right-panel-active .overlay-right{
+    transform: translateX(20%);
+}
+
+/* --- 新增大標題樣式 --- */
+#main-title {
+    position: absolute;
+    top: 10%; /* 將標題向上移動 */
+    left: 50%;
+    transform: translateX(-50%);
+    color: #ffffff;
+    font-size: 3em;
+    font-weight: bold;
+    text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.6);
+    text-align: center;
+    z-index: 5;
+    width: 80%;
+}
+
+/* 移除响应式代码，如果原始版本没有的话 */
+/*
+@media (max-width: 768px) { ... }
+@media (max-width: 480px) { ... }
+*/
+
+/* --- Login/Signup Message Styling --- */
+
+/* Style for the message paragraphs within forms */
+.form-container .message {
+  margin-top: 15px; /* Add some space above the message */
+  padding: 10px;
+  border-radius: 5px;
+  width: 100%; /* Take full width of the form container */
+  text-align: center;
+  font-size: 13px;
+  font-weight: bold;
+  display: none; /* Hide messages by default */
+}
+
+/* Style for error messages (triggered by adding .error class in JS) */
+.form-container .message.error {
+  display: block !important; /* Make error messages visible, use !important to be safe */
+  background-color: #f8d7da; /* Light red background */
+  color: #721c24;           /* Dark red text */
+  border: 1px solid #f5c6cb;/* Reddish border */
+}
+
+/* Style for success messages (e.g., for signup) */
+.form-container .message.success {
+  display: block !important; /* Make success messages visible */
+  background-color: #d4edda; /* Light green background */
+  color: #155724;           /* Dark green text */
+  border: 1px solid #c3e6cb;/* Greenish border */
+}
+
+/* --- Redirect Message Area Styling (from previous step, ensure it's here) --- */
+.redirect-message {
+    padding: 15px;
+    margin-bottom: 20px;
+    border-radius: 5px;
+    text-align: center;
+    font-weight: bold;
+    display: none;  /* Hidden by default */
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.redirect-message.error {
+    background-color: var(--danger-light-color, #f8d7da);
+    color: var(--danger-color, #721c24);
+    border: 1px solid var(--danger-border-color, #f5c6cb);
+    display: block;
+}
+
+.redirect-message.info {
+    background-color: var(--info-light-color, #cce5ff);
+    color: var(--info-color, #004085);
+    border: 1px solid var(--info-border-color, #b8daff);
+    display: block;
+}

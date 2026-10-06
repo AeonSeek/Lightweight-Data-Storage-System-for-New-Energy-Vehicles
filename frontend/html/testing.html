@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8"> <meta name="viewport" content="width=device-width, initial-scale=1.0"> <title>检测车间 - 实时监控</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
+    <link rel="stylesheet" href="/css/style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns@3.0.0/dist/chartjs-adapter-date-fns.bundle.min.js"></script>
+</head>
+<body>
+     <header>
+        <h1>新能源汽车生产车间</h1>
+        <button id="theme-toggle-btn" title="切换主题">
+            <i class="fas fa-sun"></i>
+        </button>
+    </header>
+    <nav>
+        <button class="nav-toggle" aria-label="Toggle navigation" aria-expanded="false">
+            <i class="fas fa-bars" aria-hidden="true"></i>
+        </button>
+        <ul id="nav-menu"><li><a href="/html/index.html" id="nav-index">首页概览</a></li><li><a href="/html/battery.html" id="nav-battery">电池车间</a></li><li><a href="/html/welding.html" id="nav-welding">焊接车间</a></li><li><a href="/html/assembly.html" id="nav-assembly">总装车间</a></li><li><a href="/html/testing.html" id="nav-testing">检测车间</a></li></ul>
+    </nav>
+    <main>
+        <div class="main-title-container">
+            <h2>检测车间 - 数据监控</h2>
+            <button id="export-data-button" class="export-button-main" title="导出当前页面数据"><i class="bi bi-download"></i> 导出数据</button>
+        </div>
+        <div class="workshop-layout">
+            <div class="data-card gauge-card" data-key="soc" data-status="idle">
+                 <div class="data-card-header"> <i class="bi bi-battery-charging data-card-icon"></i> <span class="data-card-label">车辆充电状态 (SOC)</span> <span class="data-card-status-indicator">--</span> </div>
+                 <div class="data-card-content gauge-chart-container"> <canvas id="chart_soc"></canvas> <span class="gauge-value-text" id="value_soc">-</span> </div>
+             </div>
+             <div class="data-card gauge-card" data-key="test_env_temp" data-status="idle">
+                 <div class="data-card-header"> <i class="bi bi-thermometer-half data-card-icon"></i> <span class="data-card-label">测试环境温度</span> <span class="data-card-status-indicator">--</span> </div>
+                 <div class="data-card-content gauge-chart-container"> <canvas id="chart_test_env_temp"></canvas> <span class="gauge-value-text" id="value_test_env_temp">-</span> </div>
+             </div>
+             <div class="data-card gauge-card" data-key="test_env_humidity" data-status="idle">
+                 <div class="data-card-header"> <i class="bi bi-moisture data-card-icon"></i> <span class="data-card-label">测试环境湿度</span> <span class="data-card-status-indicator">--</span> </div>
+                 <div class="data-card-content gauge-chart-container"> <canvas id="chart_test_env_humidity"></canvas> <span class="gauge-value-text" id="value_test_env_humidity">-</span> </div>
+             </div>
+
+             <div class="data-card chart-card" data-key="charge_current" data-status="idle">
+                 <div class="data-card-header"> <i class="bi bi-lightning-charge data-card-icon"></i> <span class="data-card-label">充电电流 (A) - 趋势</span> <span class="data-card-status-indicator">--</span> </div>
+                 <div class="data-card-content line-chart-container"> <canvas id="chart_line_charge_current"></canvas> </div>
+             </div>
+             <div class="data-card chart-card" data-key="insulation_resistance" data-status="idle">
+                 <div class="data-card-header"> <i class="bi bi-shield-check data-card-icon"></i> <span class="data-card-label">绝缘电阻 (MΩ) - 趋势</span> <span class="data-card-status-indicator">--</span> </div>
+                 <div class="data-card-content line-chart-container"> <canvas id="chart_line_insulation_resistance"></canvas> </div>
+             </div>
+
+             <div class="data-card" data-key="camber_angle" data-status="idle">
+                 <div class="data-card-header"> <i class="bi bi-compass data-card-icon"></i> <span class="data-card-label">四轮定位-外倾角</span> <span class="data-card-status-indicator">--</span> </div>
+                 <div class="data-card-content"> <span class="data-card-value" id="camber_angle">-</span> </div>
+             </div>
+             <div class="data-card" data-key="toe_angle" data-status="idle">
+                 <div class="data-card-header"> <i class="bi bi-compass-fill data-card-icon"></i> <span class="data-card-label">四轮定位-前束角</span> <span class="data-card-status-indicator">--</span> </div>
+                 <div class="data-card-content"> <span class="data-card-value" id="toe_angle">-</span> </div>
+             </div>
+             <div class="data-card" data-key="adas_calibration" data-status="idle">
+                 <div class="data-card-header"> <i class="bi bi-camera-video-fill data-card-icon"></i> <span class="data-card-label">ADAS 摄像头标定</span> <span class="data-card-status-indicator">--</span> </div>
+                 <div class="data-card-content"> <span class="data-card-value" id="adas_calibration">-</span> </div>
+             </div>
+             <div class="data-card" data-key="final_result" data-status="idle">
+                 <div class="data-card-header"> <i class="bi bi-clipboard-check-fill data-card-icon"></i> <span class="data-card-label">整车下线检测</span> <span class="data-card-status-indicator">--</span> </div>
+                 <div class="data-card-content"> <span class="data-card-value" id="final_result">-</span> </div>
+             </div>
+             <div class="data-card" data-key="water_test_result" data-status="idle">
+                 <div class="data-card-header"> <i class="bi bi-droplet-fill data-card-icon"></i> <span class="data-card-label">淋雨防水测试</span> <span class="data-card-status-indicator">--</span> </div>
+                 <div class="data-card-content"> <span class="data-card-value" id="water_test_result">-</span> </div>
+             </div>
+        </div>
+        <div id="last-updated">最后更新时间: -</div>
+    </main>
+    <footer><p>&copy; 2025 NEV Workshop Monitor (v5 - Polished UI). All Rights Reserved.</p></footer>
+    <button id="debug-button">手动获取数据 (Debug)</button> <pre id="debug-output"></pre>
+    <script src="/js/script.js"></script>
+    <script src="/js/theme.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            setActiveNav('testing');
+            initializeGaugeChart('soc', 0, 100, '%');
+            initializeGaugeChart('test_env_temp', 20, 30, '°C');
+            initializeGaugeChart('test_env_humidity', 40, 60, '%');
+            initializeLineChart('charge_current', '充电电流', 'A');
+            initializeLineChart('insulation_resistance', '绝缘电阻', 'MΩ');
+            const lineKeys = ['charge_current', 'insulation_resistance'];
+            startDataFetching('testing', lineKeys);
+            setupDebugButton('testing', lineKeys);
+            setupExportButton('testing');
+        });
+    </script>
+</body>
+</html> 

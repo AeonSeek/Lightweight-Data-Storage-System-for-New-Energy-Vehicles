@@ -1,0 +1,21 @@
+# Dependencies and local settings
+node_modules/
+.env
+.env.*
+!.env.example
+.vscode/
+.idea/
+# Generated data and logs
+*.db
+*.db-journal
+*.db-wal
+*.db-shm
+*.sqlite
+*.sqlite3
+*.log
+logs/
+# Build and operating system files
+dist/
+coverage/
+.DS_Store
+Thumbs.db

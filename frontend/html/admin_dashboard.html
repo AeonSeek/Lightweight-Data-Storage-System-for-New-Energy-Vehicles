@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>管理员仪表盘</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f7f6;
+            color: #333;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+        header {
+            background-color: #007bff;
+            color: white;
+            padding: 20px 0;
+            text-align: center;
+            width: 100%;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        header h1 {
+            margin: 0;
+            font-size: 2em;
+        }
+        .container {
+            width: 90%;
+            max-width: 1000px;
+            margin: 30px auto;
+            padding: 20px;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+        }
+        nav ul {
+            list-style-type: none;
+            padding: 0;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        nav ul li {
+            margin: 10px;
+        }
+        nav ul li a {
+            display: block;
+            background-color: #007bff;
+            color: white;
+            padding: 15px 30px;
+            text-decoration: none;
+            border-radius: 5px;
+            font-size: 1.1em;
+            transition: background-color 0.3s ease;
+            text-align: center;
+        }
+        nav ul li a:hover {
+            background-color: #0056b3;
+        }
+        footer {
+            margin-top: auto;
+            padding: 15px;
+            text-align: center;
+            color: #777;
+            font-size: 0.9em;
+            width: 100%;
+            background-color: #e9ecef;
+        }
+         .home-link {
+            display: inline-block;
+            margin-top: 20px;
+            padding: 10px 20px;
+            background-color: #6c757d;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            font-size: 1em;
+        }
+        .home-link:hover {
+            background-color: #5a6268;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>管理员仪表盘</h1>
+    </header>
+
+    <div class="container">
+        <h2>管理选项</h2>
+        <nav>
+            <ul>
+                <li><a href="data_analysis.html">生产与运营数据分析</a></li>
+                <li><a href="employee_management.html">员工信息管理</a></li>
+                <!-- 可以根据需要添加更多管理模块 -->
+            </ul>
+        </nav>
+         <a href="selection.html" class="home-link">返回选择页面</a>
+    </div>
+
+    <footer>
+        <p>&copy; 2024 新能源汽车数据监控系统</p>
+    </footer>
+
+</body>
+</html> 

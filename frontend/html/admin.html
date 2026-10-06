@@ -1,0 +1,1499 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>员工管理</title>
+    <link rel="stylesheet" href="/css/style.css"> <!-- 复用通用样式 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" /> <!-- Font Awesome for icons -->
+    <style>
+        /* Keep specific admin page styles like header, wrapper, tabs, badges */
+        /* Remove generic overrides for body, table, th, td, basic buttons etc. */
+
+        /* New Header Styles - Keep */
+        .app-header {
+            background-color: #1a2533; /* Dark blue/grey - Can be replaced with variable if defined */
+            color: #ffffff;
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: var(--shadow-md);
+            position: sticky;
+            top: 0;
+            z-index: 1010;
+        }
+        .app-header h1 {
+            margin: 0;
+            font-size: 1.5em;
+            font-weight: 600;
+        }
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        .header-actions a,
+        .header-actions button {
+            color: #ffffff;
+            text-decoration: none;
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 0.9em;
+            padding: 8px 12px;
+            border-radius: 4px;
+            transition: background-color 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+        .header-actions a:hover,
+        .header-actions button:hover {
+            background-color: rgba(255, 255, 255, 0.15);
+        }
+        .logout-button-header {
+             /* Kept for potential specific styling */
+        }
+
+        /* Main Content Wrapper Styles - Keep */
+        .main-content-wrapper {
+            width: 90%;
+            max-width: 1200px;
+            margin: 30px auto;
+            background-color: var(--bg-secondary); /* Use global var */
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: var(--shadow-lg); /* Use global var */
+            flex-grow: 1;
+        }
+
+        /* Tab Container Styles - Keep */
+        .tab-container {
+            width: 100%;
+            max-width: none;
+            margin-top: 0;
+        }
+        .tab-nav {
+            display: flex;
+            border-bottom: 2px solid var(--border-color); /* Use global var */
+            margin-bottom: -2px; /* Overlap border slightly */
+        }
+        .tab-link {
+            padding: 10px 20px;
+            cursor: pointer;
+            background-color: var(--bg-tertiary); /* Use global var */
+            border: 1px solid var(--border-color); /* Use global var */
+            border-bottom: none;
+            border-radius: 5px 5px 0 0;
+            margin-right: 5px;
+            font-weight: bold;
+            color: var(--text-secondary); /* Use global var */
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+        .tab-link:hover {
+            background-color: var(--border-color); /* Use global var */
+            color: var(--text-primary);
+        }
+        .tab-link.active {
+            background-color: var(--bg-secondary); /* Use global var (like wrapper bg) */
+            border-bottom: 2px solid var(--bg-secondary); /* Match background to cover */
+            position: relative;
+            bottom: -2px;
+            color: var(--accent-primary); /* Use global var */
+        }
+        .tab-content {
+            display: none;
+            background-color: var(--bg-secondary);
+            padding: 30px;
+            border-radius: 0 8px 8px 8px;
+            box-shadow: var(--shadow-md); /* Use existing shadow */
+            border: 1px solid var(--border-color);
+            border-top: none;
+        }
+        .tab-content.active {
+            display: block;
+        }
+
+        /* Specific Admin Header within Tab Content - Keep but use vars */
+         .admin-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid var(--border-color); /* Use global var */
+        }
+        .admin-header h2 {
+            margin: 0;
+            color: var(--text-primary); /* Use global var */
+            font-size: 1.8em;
+        }
+
+        /* Keep Table styles if needed, but rely on global or refine */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            /* Remove border, th, td styles if covered globally */
+        }
+         th {
+             background-color: var(--bg-tertiary);
+             color: var(--text-primary);
+             font-weight: bold; /* Keep boldness maybe */
+             padding: 12px 15px; /* Keep padding */
+             text-align: left; /* Keep text align */
+             border-bottom: 2px solid var(--border-color); /* Stronger bottom border for header */
+        }
+        td {
+            border-bottom: 1px solid var(--border-color); /* Use global var */
+            padding: 12px 15px;
+            text-align: left;
+            color: var(--text-primary);
+        }
+        tr:hover td { /* More specific hover */
+             background-color: var(--bg-tertiary); /* Use tertiary for hover */
+        }
+
+        /* Action Buttons - Keep but use vars */
+        .action-buttons button {
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 5px;
+            margin-right: 5px;
+            font-size: 1.1em;
+        }
+        .action-buttons .edit-btn {
+            color: var(--status-warn-border); /* Use global var */
+        }
+        .action-buttons .delete-btn {
+            color: var(--status-nok-border); /* Use global var */
+        }
+         .action-buttons .edit-btn:hover {
+            color: var(--status-warn-border); filter: brightness(80%);
+         }
+         .action-buttons .delete-btn:hover {
+            color: var(--status-nok-border); filter: brightness(80%);
+         }
+
+        /* Add Employee Button - Use Vars */
+         .add-button {
+            background-color: var(--accent-primary);
+            color: var(--bg-secondary);
+            padding: 10px 15px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1em;
+            transition: filter 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+         }
+         .add-button:hover {
+            filter: brightness(90%);
+         }
+         .add-button i {
+            /* margin-right: 5px; Handled by gap */
+         }
+
+        /* Modal Styles - Keep general structure, use vars */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.6);
+            padding-top: 60px;
+        }
+        .modal-content {
+            background-color: var(--bg-secondary);
+            margin: 5% auto;
+            padding: 30px;
+            border: 1px solid var(--border-color);
+            width: 80%;
+            max-width: 500px;
+            border-radius: 8px;
+            box-shadow: var(--shadow-lg);
+            position: relative;
+        }
+        .modal-header {
+            padding-bottom: 15px;
+            border-bottom: 1px solid var(--border-color);
+            margin-bottom: 20px;
+            font-size: 1.5em;
+            color: var(--text-primary);
+            display: flex; /* Use flex for better alignment */
+            justify-content: space-between;
+            align-items: center;
+        }
+        .modal-header h2 {
+             margin: 0;
+             font-size: 1.2em; /* Adjust */
+        }
+        .modal-header .close-btn {
+            color: var(--text-secondary);
+            /* float: right; Removed float */
+            font-size: 1.5rem; /* Adjust size */
+            font-weight: bold;
+            cursor: pointer;
+            background: none; /* Make it a button */
+            border: none;
+            padding: 0;
+            line-height: 1;
+        }
+        .modal-header .close-btn:hover,
+        .modal-header .close-btn:focus {
+            color: var(--text-primary);
+            text-decoration: none;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: var(--text-secondary);
+            font-weight: bold;
+        }
+        .form-group input[type="text"],
+        .form-group input[type="email"],
+        .form-group input[type="password"],
+        .form-group select {
+            width: 100%; /* Use 100% width */
+            padding: 10px;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            font-size: 1em;
+            background-color: var(--bg-secondary);
+            color: var(--text-primary);
+            box-sizing: border-box; /* Include padding in width */
+        }
+         .form-group input:focus, .form-group select:focus {
+            border-color: var(--accent-primary);
+            outline: 0;
+            box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25); /* Use updated primary color */
+         }
+        .modal-actions {
+            text-align: right;
+            margin-top: 30px;
+        }
+        .modal-actions button {
+            padding: 10px 20px;
+            border-radius: 5px;
+            border: none;
+            cursor: pointer;
+            font-size: 1em;
+            margin-left: 10px;
+        }
+        .modal-actions .save-btn {
+            background-color: var(--accent-primary);
+            color: var(--bg-secondary);
+        }
+        .modal-actions .save-btn:hover {
+             filter: brightness(90%);
+        }
+        .modal-actions .cancel-btn {
+            background-color: var(--text-secondary);
+            color: var(--bg-secondary);
+         }
+         .modal-actions .cancel-btn:hover {
+            background-color: var(--text-primary);
+         }
+
+        /* Message area - Use Vars */
+        #modal-message, #edit-modal-message, #system-user-modal-message, #edit-system-user-modal-message {
+            margin-top: 15px;
+            padding: 10px;
+            border-radius: 4px;
+            display: none; /* Hidden by default */
+            text-align: center;
+        }
+        .message.success { /* More specific selector */
+            background-color: var(--status-ok-bg);
+            color: var(--status-ok-border);
+            border: 1px solid var(--status-ok-border);
+        }
+        .message.error { /* More specific selector */
+            background-color: var(--status-nok-bg);
+            color: var(--status-nok-border);
+            border: 1px solid var(--status-nok-border);
+        }
+
+        /* Notification Area - Keep but use vars */
+        #notification-area {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 2000;
+            padding: 15px 20px;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            color: #fff; /* Keep white text for colored backgrounds */
+            font-size: 1em;
+            display: none;
+            opacity: 0;
+            transition: opacity 0.5s ease-in-out;
+            max-width: 350px;
+        }
+        #notification-area.show {
+            display: block;
+            opacity: 1;
+        }
+        #notification-area.success {
+            background-color: var(--status-ok-border); /* Use border color for solid bg */
+        }
+        #notification-area.error {
+            background-color: var(--status-nok-border); /* Use border color for solid bg */
+        }
+        #notification-area.info {
+            background-color: var(--status-info-border); /* Use border color for solid bg */
+        }
+
+        /* Role Badge Styles - Keep */
+        .badge {
+            display: inline-block;
+            padding: 0.35em 0.65em;
+            font-size: 0.8em;
+            font-weight: 600;
+            line-height: 1;
+            color: #fff;
+            text-align: center;
+            white-space: nowrap;
+            vertical-align: baseline;
+            border-radius: 0.35rem;
+        }
+        .badge-admin {
+            background-color: #6f42c1; /* Purple */
+        }
+        .badge-operator {
+             background-color: #17a2b8; /* Teal/Cyan */
+        }
+        .badge-system-admin {
+             background-color: #fd7e14; /* Orange */
+        }
+        .badge-general-user {
+             background-color: #20c997; /* Teal Green */
+        }
+
+        /* Search Input Styles */
+        .search-container {
+            position: relative;
+            max-width: 400px; /* Limit search bar width */
+            margin-bottom: 15px; /* Already added inline, but good to have here */
+        }
+        .search-input {
+            width: 100%;
+            padding: 10px 10px 10px 35px; /* Space for icon */
+            border: 1px solid var(--border-color);
+            border-radius: 5px;
+            font-size: 1em;
+            background-color: var(--bg-secondary);
+            color: var(--text-primary);
+            box-sizing: border-box;
+            transition: border-color 0.2s ease, box-shadow 0.2s ease;
+        }
+        .search-input:focus {
+            border-color: var(--accent-primary);
+            outline: 0;
+            box-shadow: 0 0 0 0.2rem var(--shadow-color); /* Use theme shadow color */
+        }
+        .search-container::before {
+            content: "\f002"; /* Font Awesome search icon unicode */
+            font-family: "Font Awesome 6 Free"; /* Ensure Font Awesome is loaded */
+            font-weight: 900;
+            position: absolute;
+            left: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-secondary);
+            pointer-events: none; /* Allow clicking into input */
+            z-index: 1; /* Ensure icon is above input background */
+        }
+
+         /* Pagination Styles */
+        .pagination-controls {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px 0;
+            margin-top: 20px;
+            flex-wrap: wrap;
+            gap: 5px;
+        }
+        .pagination-controls button {
+            background-color: var(--bg-secondary);
+            color: var(--accent-primary);
+            border: 1px solid var(--border-color);
+            padding: 8px 12px;
+            margin: 0 2px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+            font-size: 0.85em;
+            line-height: 1.2;
+            /* Reset some generic button styles if needed */
+            box-shadow: none;
+            gap: 0; /* Reset gap if using icons */
+        }
+        .pagination-controls button:hover {
+            background-color: var(--bg-tertiary);
+            border-color: var(--text-secondary);
+        }
+        .pagination-controls button.active {
+            background-color: var(--accent-primary);
+            color: var(--bg-secondary);
+            border-color: var(--accent-primary);
+            font-weight: bold;
+            cursor: default;
+        }
+        .pagination-controls button:disabled {
+            color: var(--text-secondary);
+            background-color: var(--bg-tertiary);
+            border-color: var(--border-color);
+            cursor: not-allowed;
+            opacity: 0.6;
+        }
+        .pagination-controls .page-info {
+            margin: 0 15px;
+            font-size: 0.9em;
+            color: var(--text-secondary);
+        }
+
+    </style>
+</head>
+<body>
+    <div id="notification-area"></div> <!-- Notification Area -->
+
+    <!-- New Header -->
+    <header class="app-header">
+        <h1 id="main-title">新能源汽车数据存储系统</h1>
+        <div class="header-actions">
+             <a href="/html/selection.html" class="back-link-header"><i class="fas fa-arrow-left"></i> 返回</a>
+             <button id="theme-toggle-btn" class="header-actions-button" title="切换主题">
+                <i class="fas fa-sun"></i> <!-- 默认显示太阳图标 -->
+             </button>
+             <button class="logout-button-header" id="admin-logout-btn"><i class="fas fa-sign-out-alt"></i> 登出</button>
+        </div>
+    </header>
+
+    <!-- Main Content Wrapper -->
+    <div class="main-content-wrapper">
+        <!-- Tab Navigation -->
+        <div class="tab-container">
+            <div class="tab-nav">
+                <button class="tab-link active" data-target="employee-management">员工管理</button>
+                <button class="tab-link" data-target="system-user-management">系统用户管理</button>
+            </div>
+
+            <!-- Tab Content Panels -->
+            <div id="employee-management" class="tab-content active"> 
+                <!-- Existing Employee Management Content -->
+                <div class="admin-header">
+                    <h2>员工列表</h2>
+                    <button class="add-button" id="add-employee-btn"><i class="fas fa-plus"></i>添加员工</button>
+                </div>
+                <!-- Search Input for Employees -->
+                <div class="search-container" style="margin-bottom: 15px;">
+                    <input type="text" id="employee-search" class="search-input" placeholder="按用户名或邮箱搜索...">
+                </div>
+                <table>
+                    <thead>
+                        <tr><th>ID</th><th>用户名</th><th>邮箱</th><th>角色</th><th>操作</th></tr>
+                    </thead>
+                    <tbody id="employee-table-body">
+                        <tr><td colspan="5" style="text-align:center;">暂无员工数据</td></tr>
+                    </tbody>
+                </table>
+                <!-- Pagination Controls for Employees -->
+                <div id="employee-pagination" class="pagination-controls"></div>
+            </div>
+
+            <div id="system-user-management" class="tab-content"> 
+                <!-- Existing System User Management Content -->
+                 <div class="admin-header">
+                    <h2>系统用户列表</h2>
+                    <button class="add-button" id="add-system-user-btn"><i class="fas fa-user-plus"></i>添加系统用户</button>
+                </div>
+                <!-- Search Input for System Users -->
+                <div class="search-container" style="margin-bottom: 15px;">
+                    <input type="text" id="system-user-search" class="search-input" placeholder="按用户名或邮箱搜索...">
+                </div>
+                <table id="system-users-table">
+                    <thead>
+                        <tr><th>ID</th><th>用户名</th><th>邮箱</th><th>系统角色</th><th>创建时间</th><th>操作</th></tr>
+                    </thead>
+                    <tbody id="system-user-table-body">
+                        <tr><td colspan="6" style="text-align:center;">暂无系统用户数据</td></tr>
+                    </tbody>
+                </table>
+                <!-- Pagination Controls for System Users -->
+                <div id="system-user-pagination" class="pagination-controls"></div>
+            </div>
+        </div> 
+        <!-- End Tab Container -->
+    </div> <!-- End Main Content Wrapper -->
+
+    <!-- Modals remain outside the main content wrapper -->
+    <!-- Add Employee Modal -->
+    <div id="addEmployeeModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <span class="close-btn" id="close-modal-btn">&times;</span>
+                <h2>添加新员工</h2>
+            </div>
+            <form id="add-employee-form">
+                <div class="form-group">
+                    <label for="username">用户名:</label>
+                    <input type="text" id="username" name="username" required>
+                </div>
+                <div class="form-group">
+                    <label for="email">邮箱:</label>
+                    <input type="email" id="email" name="email" required>
+                </div>
+                <div class="form-group">
+                    <label for="password">密码:</label>
+                    <input type="password" id="password" name="password" required>
+                </div>
+                <div class="form-group">
+                    <label for="role">角色:</label>
+                    <select id="role" name="role">
+                        <option value="操作员">操作员</option>
+                        <option value="管理员">管理员</option>
+                    </select>
+                </div>
+                <div id="modal-message" class="message"></div>
+                <div class="modal-actions">
+                    <button type="button" class="cancel-btn" id="cancel-add-btn">取消</button>
+                    <button type="submit" class="save-btn">保存</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    <!-- Edit Employee Modal -->
+    <div id="editEmployeeModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <span class="close-btn" id="close-edit-modal-btn">&times;</span>
+                <h2>编辑员工信息</h2>
+            </div>
+            <form id="edit-employee-form">
+                <input type="hidden" id="edit-employee-id" name="employeeId">
+                
+                <div class="form-group">
+                    <label for="edit-username">用户名:</label>
+                    <input type="text" id="edit-username" name="username" required>
+                </div>
+                <div class="form-group">
+                    <label for="edit-email">邮箱:</label>
+                    <input type="email" id="edit-email" name="email" required>
+                </div>
+                <div class="form-group">
+                    <label for="edit-password">新密码 (可选):</label>
+                    <input type="password" id="edit-password" name="password">
+                    <small>如不修改密码，请留空。</small>
+                </div>
+                <div class="form-group">
+                    <label for="edit-role">角色:</label>
+                    <select id="edit-role" name="role">
+                        <option value="操作员">操作员</option>
+                        <option value="管理员">管理员</option>
+                    </select>
+                </div>
+                <div id="edit-modal-message" class="message"></div>
+                <div class="modal-actions">
+                    <button type="button" class="cancel-btn" id="cancel-edit-btn">取消</button>
+                    <button type="submit" class="save-btn">保存更改</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    <!-- Add System User Modal -->
+    <div id="addSystemUserModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <span class="close-btn" id="close-add-system-user-modal-btn">&times;</span>
+                <h2>添加新系统用户</h2>
+            </div>
+            <form id="add-system-user-form">
+                <div class="form-group">
+                    <label for="system-username">用户名:</label>
+                    <input type="text" id="system-username" name="username" required>
+                </div>
+                <div class="form-group">
+                    <label for="system-email">邮箱:</label>
+                    <input type="email" id="system-email" name="email" required>
+                </div>
+                <div class="form-group">
+                    <label for="system-password">密码:</label>
+                    <input type="password" id="system-password" name="password" required>
+                </div>
+                <div class="form-group">
+                    <label for="system-role">系统角色:</label>
+                    <select id="system-role" name="role">
+                        <option value="general_user">普通用户 (General User)</option>
+                        <option value="system_admin">系统管理员 (System Admin)</option>
+                    </select>
+                </div>
+                <div id="system-user-modal-message" class="message"></div>
+                <div class="modal-actions">
+                    <button type="button" class="cancel-btn" id="cancel-add-system-user-btn">取消</button>
+                    <button type="submit" class="save-btn">保存</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    <!-- Edit System User Modal -->
+    <div id="editSystemUserModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <span class="close-btn" id="close-edit-system-user-modal-btn">&times;</span>
+                <h2>编辑系统用户</h2>
+            </div>
+            <form id="edit-system-user-form">
+                <input type="hidden" id="edit-system-user-id" name="systemUserId">
+                <div class="form-group">
+                    <label for="edit-system-username">用户名:</label>
+                    <input type="text" id="edit-system-username" name="username" required>
+                </div>
+                <div class="form-group">
+                    <label for="edit-system-email">邮箱:</label>
+                    <input type="email" id="edit-system-email" name="email" required>
+                </div>
+                <div class="form-group">
+                    <label for="edit-system-role">系统角色:</label>
+                    <select id="edit-system-role" name="role">
+                        <option value="general_user">普通用户 (General User)</option>
+                        <option value="system_admin">系统管理员 (System Admin)</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="edit-system-password">新密码 (可选):</label>
+                    <input type="password" id="edit-system-password" name="password">
+                    <small>如不修改密码，请留空。</small>
+                </div>
+                <div id="edit-system-user-modal-message" class="message"></div>
+                <div class="modal-actions">
+                    <button type="button" class="cancel-btn" id="cancel-edit-system-user-btn">取消</button>
+                    <button type="submit" class="save-btn">保存更改</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // DOM Elements for Employee Management
+        const addEmployeeBtn = document.getElementById('add-employee-btn');
+        const addEmployeeModal = document.getElementById('addEmployeeModal');
+        const closeModalBtn = document.getElementById('close-modal-btn');
+        const cancelAddBtn = document.getElementById('cancel-add-btn');
+        const addEmployeeForm = document.getElementById('add-employee-form');
+        const modalMessage = document.getElementById('modal-message');
+        const editEmployeeModal = document.getElementById('editEmployeeModal');
+        const closeEditModalBtn = document.getElementById('close-edit-modal-btn');
+        const cancelEditBtn = document.getElementById('cancel-edit-btn');
+        const editEmployeeForm = document.getElementById('edit-employee-form');
+        const editModalMessage = document.getElementById('edit-modal-message');
+        const editEmployeeIdInput = document.getElementById('edit-employee-id');
+        const editUsernameInput = document.getElementById('edit-username');
+        const editEmailInput = document.getElementById('edit-email');
+        const editPasswordInput = document.getElementById('edit-password');
+        const editRoleSelect = document.getElementById('edit-role');
+        const employeeTableBody = document.getElementById('employee-table-body');
+
+        // DOM Elements for System User Management
+        const addSystemUserBtn = document.getElementById('add-system-user-btn');
+        const addSystemUserModal = document.getElementById('addSystemUserModal');
+        const closeAddSystemUserModalBtn = document.getElementById('close-add-system-user-modal-btn');
+        const cancelAddSystemUserBtn = document.getElementById('cancel-add-system-user-btn');
+        const addSystemUserForm = document.getElementById('add-system-user-form');
+        const systemUserModalMessage = document.getElementById('system-user-modal-message');
+        const editSystemUserModal = document.getElementById('editSystemUserModal');
+        const closeEditSystemUserModalBtn = document.getElementById('close-edit-system-user-modal-btn');
+        const cancelEditSystemUserBtn = document.getElementById('cancel-edit-system-user-btn');
+        const editSystemUserForm = document.getElementById('edit-system-user-form');
+        const editSystemUserModalMessage = document.getElementById('edit-system-user-modal-message');
+        const editSystemUserIdInput = document.getElementById('edit-system-user-id');
+        const editSystemUsernameInput = document.getElementById('edit-system-username');
+        const editSystemEmailInput = document.getElementById('edit-system-email');
+        const editSystemPasswordInput = document.getElementById('edit-system-password');
+        const editSystemRoleSelect = document.getElementById('edit-system-role');
+        const systemUserTableBody = document.getElementById('system-user-table-body');
+
+        const adminLogoutBtn = document.getElementById('admin-logout-btn');
+        const notificationArea = document.getElementById('notification-area'); // Get notification area element
+        let notificationTimeout; // Variable to store timeout ID
+
+        const tabLinks = document.querySelectorAll('.tab-link');
+        const tabContents = document.querySelectorAll('.tab-content');
+
+        // Search and Pagination Elements
+        const employeeSearchInput = document.getElementById('employee-search');
+        const employeePaginationControls = document.getElementById('employee-pagination');
+        const systemUserSearchInput = document.getElementById('system-user-search');
+        const systemUserPaginationControls = document.getElementById('system-user-pagination');
+
+        // Data storage and pagination state
+        let allEmployees = [];
+        let filteredEmployees = [];
+        let employeeCurrentPage = 1;
+        const employeeRowsPerPage = 5; // Or make configurable
+
+        let allSystemUsers = [];
+        let filteredSystemUsers = [];
+        let systemUserCurrentPage = 1;
+        const systemUserRowsPerPage = 5;
+
+        // --- Utility: Debounce function for search input ---
+        function debounce(func, delay) {
+            let timeoutId;
+            return function(...args) {
+                clearTimeout(timeoutId);
+                timeoutId = setTimeout(() => {
+                    func.apply(this, args);
+                }, delay);
+            };
+        }
+
+        function addEmployeeTableButtonListeners() {
+            if (!employeeTableBody) return;
+            employeeTableBody.addEventListener('click', async (event) => {
+                const button = event.target.closest('button');
+                if (!button) return;
+                const row = button.closest('tr');
+                const employeeId = row.getAttribute('data-id');
+
+                if (button.classList.contains('edit-btn')) {
+                    editEmployeeIdInput.value = employeeId;
+                    editUsernameInput.value = row.getAttribute('data-username');
+                    editEmailInput.value = row.getAttribute('data-email');
+                    editRoleSelect.value = row.getAttribute('data-role');
+                    editPasswordInput.value = '';
+                    editModalMessage.style.display = 'none';
+                    editEmployeeModal.style.display = 'block';
+                } else if (button.classList.contains('delete-btn')) {
+                    if (confirm(`确定要删除员工 ID: ${employeeId} 吗？此操作不可撤销。`)) {
+                        const token = getAuthToken();
+                        if (!token) return;
+                        
+                        // Disable button and show loading
+                        const originalButtonContent = button.innerHTML;
+                        button.disabled = true;
+                        button.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+
+                        try {
+                            const response = await fetch(`/api/employees/${employeeId}`, { 
+                                method: 'DELETE',
+                                headers: { 'Authorization': `Bearer ${token}` } 
+                            });
+                            const data = await response.json();
+                            if (handleAuthError(response, data)) return;
+                            if (response.ok && data.success) {
+                                // Re-fetch data instead of just removing row to update pagination
+                                showNotification('员工删除成功！', 'success');
+                                fetchEmployees(); // Re-fetch and re-render
+                                // Button is gone, no need to restore
+                            } else {
+                                showNotification(`删除员工失败: ${data.message || '未知错误'}`, 'error');
+                                // Re-enable button on failure
+                                button.disabled = false;
+                                button.innerHTML = originalButtonContent;
+                            }
+                        } catch (error) {
+                            console.error('删除员工请求错误:', error);
+                            showNotification('删除员工请求失败。', 'error');
+                            // Re-enable button on catch
+                            button.disabled = false;
+                            button.innerHTML = originalButtonContent;
+                        }
+                    }
+                }
+            });
+        }
+
+        // --- Employee Management Specific Functions ---
+        async function fetchEmployees() {
+            employeeTableBody.innerHTML = `<tr><td colspan="5" style="text-align:center;">正在加载员工...</td></tr>`;
+            employeePaginationControls.innerHTML = ''; // Clear pagination
+            const token = getAuthToken();
+            if (!token) { window.location.href = '/html/login.html'; return; }
+            try {
+                const response = await fetch('/api/employees', {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const responseData = await response.json();
+                if (handleAuthError(response, responseData)) return;
+                if (!responseData.success || !responseData.employees) throw new Error(responseData.message || '获取员工数据格式不正确');
+                
+                allEmployees = responseData.employees;
+                filteredEmployees = allEmployees; // Initially, filtered is all
+                employeeSearchInput.value = ''; // Clear search input
+                employeeCurrentPage = 1; // Reset page
+                setupEmployeePagination(); // Setup pagination controls
+                renderEmployeeTablePage(employeeCurrentPage); // Render the first page
+
+                addEmployeeTableButtonListeners(); // Re-add listeners after rendering
+            } catch (error) {
+                console.error('获取员工列表失败:', error);
+                employeeTableBody.innerHTML = '<tr><td colspan="5" style="text-align:center; color: var(--danger-color);">加载员工数据失败。</td></tr>';
+                employeePaginationControls.innerHTML = '<span class="page-info" style="color: var(--status-nok-border);">加载失败</span>';
+            }
+        }
+
+        function renderEmployeeTablePage(page) {
+            employeeCurrentPage = page;
+            const start = (page - 1) * employeeRowsPerPage;
+            const end = start + employeeRowsPerPage;
+            const paginatedItems = filteredEmployees.slice(start, end);
+
+            employeeTableBody.innerHTML = ''; // Clear table body
+            if (paginatedItems.length === 0) {
+                employeeTableBody.innerHTML = `<tr><td colspan="5" style="text-align:center;">${filteredEmployees === allEmployees ? '暂无员工数据' : '未找到匹配的员工'}</td></tr>`;
+            } else {
+                paginatedItems.forEach(employee => {
+                    const row = document.createElement('tr');
+                    row.setAttribute('data-id', employee.id);
+                    row.setAttribute('data-username', employee.username);
+                    row.setAttribute('data-email', employee.email);
+                    row.setAttribute('data-role', employee.role);
+                    const roleBadgeClass = employee.role.toLowerCase() === '管理员' ? 'badge-admin' : 'badge-operator';
+                    const roleText = escapeHTML(employee.role);
+                    row.innerHTML = `
+                        <td>${employee.id}</td>
+                        <td>${escapeHTML(employee.username)}</td>
+                        <td>${escapeHTML(employee.email)}</td>
+                        <td><span class="badge ${roleBadgeClass}">${roleText}</span></td>
+                        <td class="action-buttons">
+                            <button class="edit-btn" title="编辑员工"><i class="fas fa-edit"></i></button>
+                            <button class="delete-btn" title="删除员工"><i class="fas fa-trash"></i></button>
+                        </td>
+                    `;
+                    employeeTableBody.appendChild(row);
+                });
+            }
+            updateEmployeePaginationButtons(); // Update button states (disabled/active)
+        }
+
+        function setupEmployeePagination() {
+            employeePaginationControls.innerHTML = ''; // Clear old controls
+            const pageCount = Math.ceil(filteredEmployees.length / employeeRowsPerPage);
+
+            if (pageCount <= 1) return; // Don't show pagination if only one page
+
+            // Previous Button
+            const prevButton = document.createElement('button');
+            prevButton.innerHTML = '&laquo;';
+            prevButton.title = '上一页';
+            prevButton.addEventListener('click', () => {
+                if (employeeCurrentPage > 1) {
+                    renderEmployeeTablePage(employeeCurrentPage - 1);
+                }
+            });
+            employeePaginationControls.appendChild(prevButton);
+
+            // Page Info Span
+            const pageInfo = document.createElement('span');
+            pageInfo.classList.add('page-info');
+            employeePaginationControls.appendChild(pageInfo);
+
+            // Next Button
+            const nextButton = document.createElement('button');
+            nextButton.innerHTML = '&raquo;';
+            nextButton.title = '下一页';
+            nextButton.addEventListener('click', () => {
+                if (employeeCurrentPage < pageCount) {
+                   renderEmployeeTablePage(employeeCurrentPage + 1);
+                }
+            });
+            employeePaginationControls.appendChild(nextButton);
+
+            updateEmployeePaginationButtons(); // Set initial state
+        }
+
+        function updateEmployeePaginationButtons() {
+            const pageCount = Math.ceil(filteredEmployees.length / employeeRowsPerPage);
+            const prevButton = employeePaginationControls.querySelector('button:first-child');
+            const nextButton = employeePaginationControls.querySelector('button:last-child');
+            const pageInfo = employeePaginationControls.querySelector('.page-info');
+
+            if (prevButton) prevButton.disabled = (employeeCurrentPage === 1);
+            if (nextButton) nextButton.disabled = (employeeCurrentPage === pageCount);
+            if (pageInfo) pageInfo.textContent = `第 ${employeeCurrentPage} / ${pageCount} 页 (${filteredEmployees.length}条)`;
+        }
+
+        const handleEmployeeSearch = debounce(() => {
+            const searchTerm = employeeSearchInput.value.toLowerCase().trim();
+            filteredEmployees = allEmployees.filter(employee => 
+                employee.username.toLowerCase().includes(searchTerm) ||
+                employee.email.toLowerCase().includes(searchTerm)
+            );
+            employeeCurrentPage = 1; // Reset to first page on search
+            setupEmployeePagination();
+            renderEmployeeTablePage(employeeCurrentPage);
+        }, 300); // 300ms debounce
+
+        if (employeeSearchInput) {
+             employeeSearchInput.addEventListener('input', handleEmployeeSearch);
+        }
+
+        // --- System User Management Specific Functions (Parallel structure to Employees) ---
+        async function fetchSystemUsers() {
+            systemUserTableBody.innerHTML = '<tr><td colspan="6" style="text-align:center;">正在加载系统用户...</td></tr>';
+            systemUserPaginationControls.innerHTML = ''; // Clear pagination
+            const token = getAuthToken();
+            if (!token) { window.location.href = '/html/login.html'; return; }
+
+            try {
+                const response = await fetch('/api/system-users', {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const responseData = await response.json();
+                if (handleAuthError(response, responseData)) return;
+
+                if (!responseData.success || !responseData.users) {
+                    throw new Error(responseData.message || '获取系统用户数据格式不正确');
+                }
+                
+                allSystemUsers = responseData.users;
+                filteredSystemUsers = allSystemUsers;
+                systemUserSearchInput.value = ''; // Clear search
+                systemUserCurrentPage = 1; // Reset page
+                setupSystemUserPagination(); // Setup pagination
+                renderSystemUserTablePage(systemUserCurrentPage); // Render first page
+
+                addSystemUserTableButtonListeners(); // Re-add listeners
+            } catch (error) {
+                console.error('获取系统用户列表失败:', error);
+                systemUserTableBody.innerHTML = '<tr><td colspan="6" style="text-align:center; color: var(--danger-color);">加载系统用户数据失败。</td></tr>';
+                systemUserPaginationControls.innerHTML = '<span class="page-info" style="color: var(--status-nok-border);">加载失败</span>';
+                showNotification('加载系统用户列表时出错。请稍后重试。 ', 'error');
+            }
+        }
+
+         function renderSystemUserTablePage(page) {
+            systemUserCurrentPage = page;
+            const start = (page - 1) * systemUserRowsPerPage;
+            const end = start + systemUserRowsPerPage;
+            const paginatedItems = filteredSystemUsers.slice(start, end);
+
+            systemUserTableBody.innerHTML = ''; // Clear table body
+            if (paginatedItems.length === 0) {
+                systemUserTableBody.innerHTML = `<tr><td colspan="6" style="text-align:center;">${filteredSystemUsers === allSystemUsers ? '暂无系统用户数据' : '未找到匹配的用户'}</td></tr>`;
+            } else {
+                paginatedItems.forEach(user => {
+                    const row = document.createElement('tr');
+                    row.setAttribute('data-id', user.id);
+                    row.setAttribute('data-username', user.username);
+                    row.setAttribute('data-email', user.email);
+                    row.setAttribute('data-role', user.role);
+                    const createdAt = new Date(user.created_at).toLocaleString('zh-CN');
+                    const systemRoleBadgeClass = user.role === 'system_admin' ? 'badge-system-admin' : 'badge-general-user';
+                    const systemRoleText = escapeHTML(user.role === 'system_admin' ? '系统管理员' : '普通用户');
+                    row.innerHTML = `
+                        <td>${user.id}</td>
+                        <td>${escapeHTML(user.username)}</td>
+                        <td>${escapeHTML(user.email)}</td>
+                        <td><span class="badge ${systemRoleBadgeClass}">${systemRoleText}</span></td>
+                        <td>${createdAt}</td>
+                        <td class="action-buttons">
+                            <button class="edit-btn" title="编辑用户"><i class="fas fa-edit"></i></button>
+                            <button class="delete-btn" title="删除用户"><i class="fas fa-trash"></i></button>
+                        </td>
+                    `;
+                    systemUserTableBody.appendChild(row);
+                });
+            }
+             updateSystemUserPaginationButtons(); // Update button states
+        }
+
+        function setupSystemUserPagination() {
+            systemUserPaginationControls.innerHTML = ''; // Clear old controls
+            const pageCount = Math.ceil(filteredSystemUsers.length / systemUserRowsPerPage);
+
+            if (pageCount <= 1) return;
+
+            const prevButton = document.createElement('button');
+            prevButton.innerHTML = '&laquo;';
+            prevButton.title = '上一页';
+            prevButton.addEventListener('click', () => {
+                if (systemUserCurrentPage > 1) {
+                    renderSystemUserTablePage(systemUserCurrentPage - 1);
+                }
+            });
+            systemUserPaginationControls.appendChild(prevButton);
+
+            const pageInfo = document.createElement('span');
+            pageInfo.classList.add('page-info');
+            systemUserPaginationControls.appendChild(pageInfo);
+
+            const nextButton = document.createElement('button');
+            nextButton.innerHTML = '&raquo;';
+            nextButton.title = '下一页';
+            nextButton.addEventListener('click', () => {
+                if (systemUserCurrentPage < pageCount) {
+                   renderSystemUserTablePage(systemUserCurrentPage + 1);
+                }
+            });
+            systemUserPaginationControls.appendChild(nextButton);
+
+            updateSystemUserPaginationButtons(); // Set initial state
+        }
+
+        function updateSystemUserPaginationButtons() {
+            const pageCount = Math.ceil(filteredSystemUsers.length / systemUserRowsPerPage);
+            const prevButton = systemUserPaginationControls.querySelector('button:first-child');
+            const nextButton = systemUserPaginationControls.querySelector('button:last-child');
+            const pageInfo = systemUserPaginationControls.querySelector('.page-info');
+
+            if (prevButton) prevButton.disabled = (systemUserCurrentPage === 1);
+            if (nextButton) nextButton.disabled = (systemUserCurrentPage === pageCount);
+            if (pageInfo) pageInfo.textContent = `第 ${systemUserCurrentPage} / ${pageCount} 页 (${filteredSystemUsers.length}条)`;
+        }
+
+        const handleSystemUserSearch = debounce(() => {
+            const searchTerm = systemUserSearchInput.value.toLowerCase().trim();
+            filteredSystemUsers = allSystemUsers.filter(user => 
+                user.username.toLowerCase().includes(searchTerm) ||
+                user.email.toLowerCase().includes(searchTerm)
+            );
+            systemUserCurrentPage = 1; // Reset to first page on search
+            setupSystemUserPagination();
+            renderSystemUserTablePage(systemUserCurrentPage);
+        }, 300);
+
+        if (systemUserSearchInput) {
+             systemUserSearchInput.addEventListener('input', handleSystemUserSearch);
+        }
+
+        // --- Initialization and Tab Logic ---
+        function initializeTabs() {
+             tabLinks.forEach(link => {
+                link.addEventListener('click', () => {
+                    const targetId = link.getAttribute('data-target');
+                    
+                    // Deactivate all tabs and content
+                    tabLinks.forEach(innerLink => innerLink.classList.remove('active'));
+                    tabContents.forEach(content => content.classList.remove('active'));
+
+                    // Activate clicked tab and corresponding content
+                    link.classList.add('active');
+                    const targetContent = document.getElementById(targetId);
+                    if(targetContent) {
+                        targetContent.classList.add('active');
+                        // Fetch data for the newly activated tab if not already loaded
+                        // Example: Fetch system users only when their tab is activated
+                        if (targetId === 'system-user-management' && systemUserTableBody.children.length <= 1) { // Check if not loaded yet
+                             fetchSystemUsers();
+                        } else if (targetId === 'employee-management' && employeeTableBody.children.length <= 1) {
+                             fetchEmployees();
+                        }
+                    }
+                });
+            });
+
+            // Ensure default active tab content is shown (already done by initial 'active' class in HTML)
+            // Optionally trigger click on default active tab to load data if needed
+            // document.querySelector('.tab-link.active').click(); // If data isn't fetched initially
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const token = getAuthToken();
+            const userRole = localStorage.getItem('userRole');
+            if (!token) { window.location.href = '/html/login.html'; return; }
+            if (userRole !== 'system_admin') {
+                // Use notification before redirecting
+                localStorage.setItem('redirectMessage', '权限不足，您无权访问管理员页面。'); // Store message for login page (optional)
+                window.location.href = '/html/selection.html'; 
+                return;
+            }
+            
+            // Initialize Tabs
+            initializeTabs();
+            
+            // Fetch initial data for the default active tab (Employee Management)
+            fetchEmployees(); 
+            // fetchSystemUsers(); // We can fetch this later when the tab is clicked or keep fetching both
+
+            if(adminLogoutBtn) { 
+                 adminLogoutBtn.addEventListener('click', () => {
+                    localStorage.removeItem('authToken');
+                    localStorage.removeItem('username');
+                    localStorage.removeItem('userRole');
+                    window.location.href = '/html/login.html';
+                });
+             }
+        });
+
+        function getAuthToken() { return localStorage.getItem('authToken'); }
+        function handleAuthError(response, data) {
+            if (response.status === 401 || response.status === 403) {
+                console.error('认证或授权失败:', data.message);
+                localStorage.removeItem('authToken');
+                localStorage.removeItem('username');
+                localStorage.removeItem('userRole');
+                // Instead of alert, maybe store a message for the login page?
+                localStorage.setItem('loginRedirectMessage', data.message || '会话已过期或权限不足，请重新登录。');
+                window.location.href = '/html/login.html';
+                return true; 
+            }
+            return false;
+        }
+
+        // Function to show notifications
+        function showNotification(message, type = 'info') {
+            if (!notificationArea) return; // Exit if notification area doesn't exist
+            
+            notificationArea.textContent = message;
+            // Reset classes
+            notificationArea.className = 'show'; 
+            // Add specific type class
+            if (type === 'success') {
+                notificationArea.classList.add('success');
+            } else if (type === 'error') {
+                notificationArea.classList.add('error');
+            } else {
+                notificationArea.classList.add('info'); // Default to info
+            }
+
+            // Clear previous timeout if exists
+            if (notificationTimeout) {
+                clearTimeout(notificationTimeout);
+            }
+
+            // Set timeout to hide notification after 3 seconds (adjust as needed)
+            notificationTimeout = setTimeout(() => {
+                notificationArea.classList.remove('show');
+                // Optionally reset completely after fade out
+                setTimeout(() => { 
+                    if (!notificationArea.classList.contains('show')) { // Check if it wasn't shown again quickly
+                         notificationArea.className = ''; 
+                         notificationArea.textContent = '';
+                    }
+                 }, 500); // Wait for fade out transition
+            }, 3000);
+        }
+
+        // Show add modal
+        addEmployeeBtn.addEventListener('click', () => {
+            addEmployeeModal.style.display = 'block';
+            addEmployeeForm.reset();
+            modalMessage.style.display = 'none';
+            modalMessage.textContent = '';
+            modalMessage.className = 'message';
+        });
+
+        // Hide add modal listeners
+        closeModalBtn.addEventListener('click', () => {
+            addEmployeeModal.style.display = 'none';
+        });
+        cancelAddBtn.addEventListener('click', () => {
+            addEmployeeModal.style.display = 'none';
+        });
+        window.addEventListener('click', (event) => {
+            if (event.target == addEmployeeModal) {
+                addEmployeeModal.style.display = 'none';
+            }
+            if (event.target == editEmployeeModal) {
+                editEmployeeModal.style.display = 'none';
+            }
+        });
+
+        // Hide edit modal listeners
+        closeEditModalBtn.addEventListener('click', () => {
+            editEmployeeModal.style.display = 'none';
+        });
+        cancelEditBtn.addEventListener('click', () => {
+            editEmployeeModal.style.display = 'none';
+        });
+
+        // Handle Add Employee Form Submission
+        addEmployeeForm.addEventListener('submit', async (event) => {
+            event.preventDefault(); 
+            modalMessage.style.display = 'none'; 
+            modalMessage.textContent = '';
+            modalMessage.className = 'message';
+
+            // Get the save button within this form
+            const saveButton = addEmployeeForm.querySelector('button[type="submit"]');
+            const cancelButton = addEmployeeForm.querySelector('.cancel-btn'); // Also disable cancel
+            const originalButtonText = saveButton.innerHTML; // Store original text
+
+            // Disable buttons and show loading state
+            saveButton.disabled = true;
+            cancelButton.disabled = true;
+            saveButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> 正在保存...';
+
+            const token = getAuthToken();
+            if (!token) { /* Handle missing token */ 
+                // Re-enable buttons before returning/redirecting
+                saveButton.disabled = false;
+                cancelButton.disabled = false;
+                saveButton.innerHTML = originalButtonText;
+                return; 
+            }
+
+            const username = document.getElementById('username').value.trim();
+            const email = document.getElementById('email').value.trim();
+            const password = document.getElementById('password').value;
+            const role = document.getElementById('role').value;
+
+            if (!username || !email || !password || !role) {
+                modalMessage.textContent = '所有字段均为必填项。';
+                modalMessage.className = 'message error';
+                modalMessage.style.display = 'block';
+                // Re-enable buttons if validation fails
+                saveButton.disabled = false;
+                cancelButton.disabled = false;
+                saveButton.innerHTML = originalButtonText;
+                return;
+            }
+
+            try {
+                const response = await fetch('/api/employees', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}` 
+                    },
+                    body: JSON.stringify({ username, email, password, role }),
+                });
+                const data = await response.json();
+                if (handleAuthError(response, data)) return; // Auth error handles redirect, no need to re-enable here
+
+                if (response.ok && data.success) {
+                    modalMessage.textContent = data.message || '员工添加成功！';
+                    modalMessage.className = 'message success';
+                    modalMessage.style.display = 'block';
+                    addEmployeeForm.reset();
+                    fetchEmployees();
+                    // No need to re-enable buttons here, modal will close
+                    setTimeout(() => {
+                        addEmployeeModal.style.display = 'none';
+                        // Reset button state when modal closes fully (or after success)
+                        saveButton.disabled = false;
+                        cancelButton.disabled = false;
+                        saveButton.innerHTML = originalButtonText;
+                    }, 2000);
+                } else {
+                    modalMessage.textContent = data.message || '添加员工失败，请检查输入信息。';
+                    modalMessage.className = 'message error';
+                    modalMessage.style.display = 'block';
+                    // Re-enable buttons on failure
+                    saveButton.disabled = false;
+                    cancelButton.disabled = false;
+                    saveButton.innerHTML = originalButtonText;
+                }
+            } catch (error) {
+                console.error('添加员工请求错误:', error);
+                modalMessage.textContent = '请求失败，请稍后再试。';
+                modalMessage.className = 'message error';
+                modalMessage.style.display = 'block';
+                // Re-enable buttons on catch
+                saveButton.disabled = false;
+                cancelButton.disabled = false;
+                saveButton.innerHTML = originalButtonText;
+            }
+        });
+
+        // Handle Edit Employee Form Submission
+        editEmployeeForm.addEventListener('submit', async (event) => {
+            event.preventDefault();
+            editModalMessage.style.display = 'none'; 
+            editModalMessage.textContent = '';
+            editModalMessage.className = 'message';
+
+            // Get buttons and store original text
+            const saveButton = editEmployeeForm.querySelector('button[type="submit"]');
+            const cancelButton = editEmployeeForm.querySelector('.cancel-btn');
+            const originalButtonText = saveButton.innerHTML;
+
+            // Disable buttons and show loading
+            saveButton.disabled = true;
+            cancelButton.disabled = true;
+            saveButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> 正在保存...';
+
+            const token = getAuthToken();
+            if (!token) { 
+                 saveButton.disabled = false; 
+                 cancelButton.disabled = false; 
+                 saveButton.innerHTML = originalButtonText;
+                 return; 
+            }
+
+            const employeeId = editEmployeeIdInput.value;
+            const username = editUsernameInput.value.trim();
+            const email = editEmailInput.value.trim();
+            const password = editPasswordInput.value; 
+            const role = editRoleSelect.value;
+
+            if (!username || !email || !role) {
+                editModalMessage.textContent = '用户名、邮箱和角色为必填项。';
+                editModalMessage.className = 'message error';
+                editModalMessage.style.display = 'block';
+                saveButton.disabled = false;
+                cancelButton.disabled = false;
+                saveButton.innerHTML = originalButtonText;
+                return;
+            }
+            
+            const requestBody = { username, email, role };
+            if (password && password.trim() !== '') { 
+                requestBody.password = password.trim();
+            }
+
+            try {
+                const response = await fetch(`/api/employees/${employeeId}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}` 
+                    },
+                    body: JSON.stringify(requestBody),
+                });
+                const data = await response.json();
+                if (handleAuthError(response, data)) return; 
+
+                if (response.ok && data.success) {
+                    editModalMessage.textContent = data.message || '员工信息更新成功！';
+                    editModalMessage.className = 'message success';
+                    editModalMessage.style.display = 'block';
+                    fetchEmployees(); 
+                    // No need to re-enable here, modal closes
+                    setTimeout(() => {
+                        editEmployeeModal.style.display = 'none';
+                        saveButton.disabled = false;
+                        cancelButton.disabled = false;
+                        saveButton.innerHTML = originalButtonText;
+                    }, 2000);
+                } else {
+                    editModalMessage.textContent = data.message || '更新员工信息失败。';
+                    editModalMessage.className = 'message error';
+                    editModalMessage.style.display = 'block';
+                    saveButton.disabled = false;
+                    cancelButton.disabled = false;
+                    saveButton.innerHTML = originalButtonText;
+                }
+            } catch (error) {
+                console.error('更新员工请求错误:', error);
+                editModalMessage.textContent = '请求失败，请稍后再试。';
+                editModalMessage.className = 'message error';
+                editModalMessage.style.display = 'block';
+                saveButton.disabled = false;
+                cancelButton.disabled = false;
+                saveButton.innerHTML = originalButtonText;
+            }
+        });
+
+        function escapeHTML(str) {
+            if (str === null || str === undefined) return '';
+            return str.toString()
+                      .replace(/&/g, '&amp;')
+                      .replace(/</g, '&lt;')
+                      .replace(/>/g, '&gt;')
+                      .replace(/"/g, '&quot;')
+                      .replace(/'/g, '&#39;');
+        }
+
+        // Show Add System User Modal
+        if (addSystemUserBtn) {
+            addSystemUserBtn.addEventListener('click', () => {
+                addSystemUserModal.style.display = 'block';
+                addSystemUserForm.reset();
+                systemUserModalMessage.style.display = 'none';
+                systemUserModalMessage.textContent = '';
+                systemUserModalMessage.className = 'message';
+            });
+        }
+
+        // Hide Add System User Modal Listeners
+        if (closeAddSystemUserModalBtn) {
+            closeAddSystemUserModalBtn.addEventListener('click', () => { addSystemUserModal.style.display = 'none'; });
+        }
+        if (cancelAddSystemUserBtn) {
+            cancelAddSystemUserBtn.addEventListener('click', () => { addSystemUserModal.style.display = 'none'; });
+        }
+
+        // Hide Edit System User Modal Listeners
+        if (closeEditSystemUserModalBtn) {
+            closeEditSystemUserModalBtn.addEventListener('click', () => { editSystemUserModal.style.display = 'none'; });
+        }
+        if (cancelEditSystemUserBtn) {
+            cancelEditSystemUserBtn.addEventListener('click', () => { editSystemUserModal.style.display = 'none'; });
+        }
+
+        // Generic window click to close modals (ensure it doesn't conflict)
+        window.addEventListener('click', (event) => {
+            if (event.target == addEmployeeModal) addEmployeeModal.style.display = 'none';
+            if (event.target == editEmployeeModal) editEmployeeModal.style.display = 'none';
+            if (event.target == addSystemUserModal) addSystemUserModal.style.display = 'none';
+            if (event.target == editSystemUserModal) editSystemUserModal.style.display = 'none';
+        });
+
+        // System User Table Button Listeners (Edit, Delete)
+        function addSystemUserTableButtonListeners() {
+            if (!systemUserTableBody) return;
+            systemUserTableBody.addEventListener('click', async (event) => {
+                const button = event.target.closest('button');
+                if (!button) return;
+                const row = button.closest('tr');
+                const userId = row.getAttribute('data-id');
+
+                if (button.classList.contains('edit-btn')) {
+                    editSystemUserIdInput.value = userId;
+                    editSystemUsernameInput.value = row.getAttribute('data-username');
+                    editSystemEmailInput.value = row.getAttribute('data-email');
+                    editSystemRoleSelect.value = row.getAttribute('data-role');
+                    editSystemPasswordInput.value = '';
+                    editSystemUserModalMessage.style.display = 'none';
+                    editSystemUserModal.style.display = 'block';
+                } else if (button.classList.contains('delete-btn')) {
+                    if (confirm(`确定要删除系统用户 ID: ${userId} 吗？此操作不可撤销。`)) {
+                        const token = getAuthToken();
+                        if (!token) return;
+                        
+                        // Disable button and show loading
+                        const originalButtonContent = button.innerHTML;
+                        button.disabled = true;
+                        button.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+
+                        try {
+                            const response = await fetch(`/api/system-users/${userId}`, { 
+                                method: 'DELETE',
+                                headers: { 'Authorization': `Bearer ${token}` } 
+                            });
+                            const data = await response.json();
+                            if (handleAuthError(response, data)) return;
+                            if (response.ok && data.success) {
+                                row.remove();
+                                if (systemUserTableBody.rows.length === 0) {
+                                    systemUserTableBody.innerHTML = '<tr><td colspan="6" style="text-align:center;">暂无系统用户数据</td></tr>';
+                                }
+                                showNotification('系统用户删除成功！', 'success');
+                                // Button is gone, no need to restore
+                            } else {
+                                showNotification(`删除系统用户失败: ${data.message || '未知错误'}`, 'error');
+                                // Re-enable button on failure
+                                button.disabled = false;
+                                button.innerHTML = originalButtonContent;
+                            }
+                        } catch (error) {
+                            console.error('删除系统用户请求错误:', error);
+                            showNotification('删除系统用户请求失败。', 'error');
+                            // Re-enable button on catch
+                            button.disabled = false;
+                            button.innerHTML = originalButtonContent;
+                        }
+                    }
+                }
+            });
+        }
+
+    </script>
+    <script src="/js/theme.js"></script> <!-- Add reference to the external theme script -->
+</body>
+</html>
